@@ -55,12 +55,8 @@
 <span class="hidden font-mono-tech text-[10px] bg-[#DC2626] text-white px-1.5 py-0.2 rounded-full font-bold" id="familyAlertBadge">!</span>
 </button>
 <button class="segmented-item" id="tab-lab" onclick="switchTab('lab')">
-<i class="ph-fill ph-chart-Polar text-base"></i>
+<i class="ph-fill ph-chart-polar text-base"></i>
 <span>3. Lab de Avaliação</span>
-</button>
-<button class="segmented-item" id="tab-code" onclick="switchTab('code')">
-<i class="ph-fill ph-code-block text-base"></i>
-<span>4. Código Separado</span>
 </button>
 </nav>
 <!-- Indicadores de Status Desktop -->
@@ -88,16 +84,8 @@
 <span class="text-[#6E6E73] hidden md:inline">Alterne medicamentos ou simule condições críticas em tempo real:</span>
 </div>
 <div class="flex flex-wrap items-center gap-1.5">
-<!-- Seletor de Medicamentos -->
-<button class="px-3 py-1.5 rounded-xl font-semibold text-xs bg-[#0066CC] text-white shadow-xs transition" id="medSwitch-0" onclick="selectActiveMedication(0)">
-          08:00 • Losartana
-        </button>
-<button class="px-3 py-1.5 rounded-xl font-medium text-xs bg-black/5 text-[#1D1D1F] hover:bg-black/10 transition" id="medSwitch-1" onclick="selectActiveMedication(1)">
-          12:00 • Metformina
-        </button>
-<button class="px-3 py-1.5 rounded-xl font-medium text-xs bg-black/5 text-[#1D1D1F] hover:bg-black/10 transition" id="medSwitch-2" onclick="selectActiveMedication(2)">
-          20:00 • Sinvastatina
-        </button>
+<!-- Seletor de Medicamentos (gerado por JS) -->
+<div class="flex flex-wrap gap-1.5" id="medSwitcher"></div>
 <span class="text-black/15 mx-1 hidden sm:inline">|</span>
 <!-- Simulador de Polifarmácia -->
 <button class="px-3 py-1.5 rounded-xl font-semibold text-xs bg-white border border-black/10 text-[#1D1D1F] hover:bg-[#FEF3C7]/60 flex items-center gap-1.5 transition" id="btnPolyLock" onclick="togglePolypharmacyLock()">
@@ -121,7 +109,7 @@
        ========================================================================== -->
 <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
 <!-- ========================================================================
-         VISÃO 1: INTERFACE DO IDOSO (WCAG 2.2 AAA + EDUCAÇÃO EM SAÚDE)
+         VISÃO 1: INTERFACE DO IDOSO (ACESSIBILIDADE + EDUCAÇÃO EM SAÚDE)
          ======================================================================== -->
 <section class="space-y-6" id="view-elderly">
 <!-- Topo Saudação + Selo de Acessibilidade -->
@@ -129,7 +117,7 @@
 <div>
 <div class="flex flex-wrap items-center gap-2">
 <span class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-[#E8F8F0] text-[#15803D]">
-<i class="ph-fill ph-check-circle"></i> Acessibilidade WCAG 2.2 AAA (Contraste &gt; 14:1)
+<i class="ph-fill ph-check-circle"></i> Foco em acessibilidade: alto contraste e botões grandes
             </span>
 <span class="text-xs font-medium text-[#6E6E73] bg-white/80 px-3 py-1 rounded-full border border-black/5">
               Paciente: Sr. José Oliveira (74 anos)
@@ -208,7 +196,7 @@
                   Escudo de Proteção Ativo • 100%
                 </span>
 <span class="text-xs font-semibold text-[#6E6E73]">
-                  🔥 5 dias seguidos no horário certo
+                  <span id="shieldStreakText">0 dias seguidos com todos os cuidados</span>
                 </span>
 </div>
 <p class="text-base sm:text-lg font-semibold text-[#1D1D1F] leading-snug pt-0.5" id="shieldEduText">
@@ -218,22 +206,7 @@
 </div>
 <!-- Pílulas de Constância da Semana -->
 <div class="flex items-center gap-2 shrink-0 bg-[#F5F5F7] p-2 rounded-2xl border border-black/5">
-<div class="w-11 py-2 rounded-xl bg-white text-center shadow-2xs">
-<div class="text-[10px] font-bold text-[#6E6E73]">SEG</div>
-<i class="ph-fill ph-check-circle text-[#15803D] text-base mt-0.5"></i>
-</div>
-<div class="w-11 py-2 rounded-xl bg-white text-center shadow-2xs">
-<div class="text-[10px] font-bold text-[#6E6E73]">TER</div>
-<i class="ph-fill ph-check-circle text-[#15803D] text-base mt-0.5"></i>
-</div>
-<div class="w-11 py-2 rounded-xl bg-white text-center shadow-2xs">
-<div class="text-[10px] font-bold text-[#6E6E73]">QUA</div>
-<i class="ph-fill ph-check-circle text-[#15803D] text-base mt-0.5"></i>
-</div>
-<div class="w-11 py-2 rounded-xl bg-white text-center shadow-2xs">
-<div class="text-[10px] font-bold text-[#6E6E73]">QUI</div>
-<i class="ph-fill ph-check-circle text-[#15803D] text-base mt-0.5"></i>
-</div>
+<div id="weekStrip" class="contents"></div>
 <div class="w-14 py-2 rounded-xl bg-[#0066CC] text-white text-center shadow-xs" id="todayStamp">
 <div class="text-[10px] font-bold uppercase opacity-90">HOJE</div>
 <div class="font-mono-tech text-xs font-bold mt-0.5" id="todayStampIcon">08:00</div>
@@ -275,7 +248,7 @@
 <div class="w-full max-w-[220px] bg-white rounded-2xl border border-black/10 shadow-md p-4 text-left relative overflow-hidden">
 <div class="h-6 -mx-4 -mt-4 mb-3 px-4 flex items-center justify-between bg-[#0066CC] text-white" id="visualBoxStripe">
 <span class="text-[10px] font-bold uppercase tracking-wider" id="visualStripeText">FAIXA AZUL</span>
-<i class="ph-fill ph-SealCheck text-xs"></i>
+<i class="ph-fill ph-seal-check text-xs"></i>
 </div>
 <div class="font-display font-extrabold text-base text-[#1D1D1F]" id="visualBoxTitle">
                   LOSARTANA 50mg
@@ -348,10 +321,10 @@
               </h3>
 </div>
 <p class="text-lg sm:text-xl font-medium text-[#1D1D1F] leading-relaxed">
-              Esta dose das <strong>08:00</strong> atrasou mais de 3 horas e está muito perto do remédio das <strong>12:00</strong>. Para evitar excesso de medicação no sangue, aguarde o contato da sua família.
+              Esta dose das <strong id="polyCurrentTime">08:00</strong> atrasou mais de 3 horas e está muito perto do remédio das <strong id="polyNextTime">12:00</strong>. Para evitar excesso de medicação no sangue, aguarde o contato da sua família.
             </p>
 <div class="text-xs font-bold text-[#DC2626] uppercase tracking-wider pt-1 flex items-center gap-1.5">
-<i class="ph-bold ph-paper-plane-tilt"></i> Notificação enviada automaticamente para Mariana (Filha)
+<i class="ph-bold ph-paper-plane-tilt"></i> Simulação de demonstração (não é orientação clínica) • Mariana (Filha) notificada
             </div>
 </div>
 <!-- ==================================================================
@@ -616,6 +589,7 @@
           </button>
 </div>
 </div>
+<div class="rounded-2xl border border-[#D97706]/40 bg-[#FEF3C7] text-[#713B00] px-4 py-3 text-sm flex items-start gap-2" role="note"><i class="ph-fill ph-info text-lg mt-0.5"></i><span><strong>Dados simulados.</strong> Estes ensaios usam perfis fixos com variação aleatória; não são medições reais de FCM/Telegram. Para o TCC, substitua por medições em dispositivos reais. O CSV marca a origem como SIMULADO.</span></div>
 <!-- SIMULADOR DE CENÁRIOS DE FALHA (RNF02) -->
 <div class="bento-card p-6 space-y-4">
 <div class="flex flex-wrap items-center justify-between gap-2">
@@ -672,7 +646,7 @@
 <div class="bento-card p-5">
 <div class="text-xs font-medium text-[#6E6E73]">Latência Média ao Familiar</div>
 <div class="font-display text-3xl font-extrabold text-[#1D1D1F] mt-1" id="labAvgLatency">1.445 ms</div>
-<div class="text-[11px] text-[#15803D] font-semibold mt-1">✓ 95% abaixo do limite de 30s</div>
+<div class="text-[11px] text-[#15803D] font-semibold mt-1" id="labUnderLimit">—</div>
 </div>
 <div class="bento-card p-5">
 <div class="text-xs font-medium text-[#6E6E73]">Desvio de Pontualidade Local</div>
@@ -715,48 +689,11 @@
 </div>
 </div>
 </section>
-<!-- ========================================================================
-         VISÃO 4: CÓDIGO-FONTE SEPARADO (`index.html`, `styles.css`, `app.js`)
-         ======================================================================== -->
-<section class="hidden space-y-6" id="view-code">
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-<div>
-<span class="text-xs font-bold px-3 py-1 rounded-full bg-[#0066CC]/10 text-[#0066CC]">
-            Modularização de Código (RNF08)
-          </span>
-<h2 class="text-2xl sm:text-3xl font-extrabold text-[#1D1D1F] mt-1.5">
-            Arquivos Separados Prontos para o VS Code (`index.html`, `styles.css`, `app.js`)
-          </h2>
-<p class="text-xs text-[#6E6E73] mt-1">
-            Todos os 3 arquivos abaixo já estão atualizados com este novo Design System Apple HIG + Notion arredondado:
-          </p>
-</div>
-</div>
-<div class="bento-card overflow-hidden">
-<div class="px-5 py-3 bg-[#F5F5F7] border-b border-black/5 flex flex-wrap items-center justify-between gap-3">
-<div class="segmented-control">
-<button class="segmented-item active" id="codeTab-html" onclick="switchCodeFile('html')">
-<i class="ph-fill ph-file-html text-[#E34F26]"></i> index.html
-            </button>
-<button class="segmented-item" id="codeTab-css" onclick="switchCodeFile('css')">
-<i class="ph-fill ph-file-css text-[#1572B6]"></i> styles.css
-            </button>
-<button class="segmented-item" id="codeTab-js" onclick="switchCodeFile('js')">
-<i class="ph-fill ph-file-js text-[#F7DF1E]"></i> app.js
-            </button>
-</div>
-<button class="btn-tactile px-4 py-2 bg-[#0066CC] hover:bg-[#0052A3] text-white text-xs shadow-2xs" onclick="copyCurrentCodeBlock()">
-<i class="ph-bold ph-copy mr-1.5"></i> Copiar Arquivo Selecionado
-          </button>
-</div>
-<pre class="p-6 bg-[#1D1D1F] text-[#F5F5F7] font-mono-tech text-xs overflow-x-auto max-h-[540px] leading-relaxed" id="codeDisplayArea"></pre>
-</div>
-</section>
 </main>
 <!-- ==========================================================================
        NOTIFICAÇÃO FLUTUANTE ESTILO APPLE PILL TOAST (SEM ALERT NATIVO)
        ========================================================================== -->
-<div class="fixed bottom-6 right-6 z-50 hidden max-w-md bg-[#1D1D1F]/95 backdrop-blur-xl text-white rounded-2xl p-4 shadow-2xl border border-white/15 transition-all" id="appleToast">
+<div class="fixed bottom-6 right-6 z-50 hidden max-w-md bg-[#1D1D1F]/95 backdrop-blur-xl text-white rounded-2xl p-4 shadow-2xl border border-white/15 transition-all" id="appleToast" role="status" aria-live="polite">
 <div class="flex items-start justify-between gap-3">
 <div class="flex items-start space-x-3">
 <div class="w-8 h-8 rounded-xl bg-[#0066CC] flex items-center justify-center shrink-0 mt-0.5">
@@ -775,7 +712,7 @@
        ========================================================================== -->
 <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 mt-8 border-t border-black/5 text-xs text-[#6E6E73] flex flex-col sm:flex-row items-center justify-between gap-2">
 <div>Instituto Federal de Brasília (IFB) • Curso de Tecnologia em Sistemas para Internet</div>
-<div>Protótipo de Avaliação Técnica (WCAG 2.2 AAA &amp; LGPD) • Abner Oliveira Mota (2026)</div>
+<div>Protótipo de Avaliação Técnica (Acessibilidade &amp; LGPD) • Abner Oliveira Mota (2026)</div>
 </footer>
 <!-- ==========================================================================
        LÓGICA COMPLETA DA APLICAÇÃO (JAVASCRIPT)
@@ -783,4 +720,3 @@
 <script src="app.js"></script>
 </body>
 </html>
-```

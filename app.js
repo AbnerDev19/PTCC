@@ -1,5 +1,17 @@
 
     // ==========================================================================
+    // UTILITÁRIOS
+    // ==========================================================================
+    function escapeHtml(v) {
+      return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function fmtTime(d) { return d.toTimeString().split(' ')[0] + '.' + String(d.getMilliseconds()).padStart(3, '0'); }
+    function parseTimeMs(t) {
+      const [h, m, rest] = t.split(':'); const [s, ms = '0'] = rest.split('.');
+      return ((+h * 60 + +m) * 60 + +s) * 1000 + +ms.padEnd(3, '0').slice(0, 3);
+    }
+
+    // ==========================================================================
     // ESTADO CENTRAL DO PROTÓTIPO
     // ==========================================================================
     const state = {
@@ -127,8 +139,9 @@
     // NAVEGAÇÃO ENTRE ABAS (SEGMENTED CONTROL)
     // ==========================================================================
     function switchTab(tabId) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       state.activeTab = tabId;
-      ['elderly', 'family', 'lab', 'code'].forEach(t => {
+      ['elderly', 'family', 'lab'].forEach(t => {
         const section = document.getElementById(`view-${t}`);
         const btn = document.getElementById(`tab-${t}`);
         if (t === tabId) {
@@ -145,8 +158,6 @@
         renderFamilyView();
       } else if (tabId === 'lab') {
         renderLabView();
-      } else if (tabId === 'code') {
-        switchCodeFile('html');
       }
     }
 
@@ -156,15 +167,15 @@
     function renderElderlyView() {
       const med = state.medications[state.activeMedIndex];
 
-      // Atualiza pílulas seletoras na barra de simulação
-      [0, 1, 2].forEach(idx => {
-        const sw = document.getElementById(`medSwitch-${idx}`);
-        if (sw && state.medications[idx]) {
-          sw.className = idx === state.activeMedIndex
-            ? 'px-3 py-1.5 rounded-xl font-semibold text-xs bg-[#0066CC] text-white shadow-xs transition'
-            : 'px-3 py-1.5 rounded-xl font-medium text-xs bg-black/5 text-[#1D1D1F] hover:bg-black/10 transition';
-        }
-      });
+      // Seletor de medicamentos (inclui os cadastrados pelo formulário)
+      document.getElementById('medSwitcher').innerHTML = state.medications.map((m, i) => {
+        const w = m.shortBoxTitle.split(' ')[0];
+        const nome = w.charAt(0) + w.slice(1).toLowerCase();
+        const cls = i === state.activeMedIndex
+          ? 'bg-[#0066CC] text-white font-semibold shadow-xs'
+          : 'bg-black/5 text-[#1D1D1F] font-medium hover:bg-black/10';
+        return `<button type="button" aria-pressed="${i === state.activeMedIndex}" class="px-3 py-1.5 rounded-xl text-xs transition ${cls}" onclick="selectActiveMedication(${i})">${m.time} • ${escapeHtml(nome)}</button>`;
+      }).join('');
 
       // Textos principais da dose
       document.getElementById('elderlyDoseTime').textContent = med.time;
@@ -222,6 +233,9 @@
       // Alerta de Polifarmácia
       const polyBox = document.getElementById('polypharmacyWarningBox');
       if (state.isPolypharmacyLocked) {
+        const nextT = state.medications.map(m => m.time).sort().find(t => t > med.time) || '—';
+        document.getElementById('polyCurrentTime').textContent = med.time;
+        document.getElementById('polyNextTime').textContent = nextT;
         polyBox.classList.remove('hidden');
       } else {
         polyBox.classList.add('hidden');
@@ -383,6 +397,22 @@
       return streak;
     }
 
+    function renderWeekStrip(data, streak) {
+      const strip = document.getElementById('weekStrip');
+      if (!strip) return;
+      const done = new Set(data.completeDays);
+      let html = '';
+      for (let i = 4; i >= 1; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const ok = done.has(localDateKey(d));
+        const dia = d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '').slice(0, 3).toUpperCase();
+        html += `<div class="w-11 py-2 rounded-xl bg-white text-center shadow-2xs" title="${ok ? 'Dia completo' : 'Sem registro completo'}"><div class="text-[10px] font-bold text-[#6E6E73]">${dia}</div><i class="ph-fill ${ok ? 'ph-check-circle text-[#15803D]' : 'ph-circle text-[#B8C2C7]'} text-base mt-0.5"></i></div>`;
+      }
+      strip.innerHTML = html;
+      const st = document.getElementById('shieldStreakText');
+      if (st) st.textContent = `${streak} ${streak === 1 ? 'dia seguido' : 'dias seguidos'} com todos os cuidados`;
+    }
+
     function renderCareJourney() {
       const data = getGameData();
       const todayCount = (data.confirmations[localDateKey()] || []).length;
@@ -393,7 +423,10 @@
       points.textContent = data.points;
       document.getElementById('gameTodayCount').textContent = `${todayCount} de ${state.medications.length} cuidados`;
       document.getElementById('gameProgressFill').style.width = `${percent}%`;
-      document.getElementById('gameProgressBar').setAttribute('aria-valuenow', String(todayCount));
+      const bar = document.getElementById('gameProgressBar');
+      bar.setAttribute('aria-valuenow', String(todayCount));
+      bar.setAttribute('aria-valuemax', String(state.medications.length));
+      renderWeekStrip(data, streak);
       document.getElementById('gameTodayMessage').textContent = todayCount >= state.medications.length
         ? 'Parabéns! Você registrou todos os cuidados previstos para hoje.'
         : `Você já registrou ${todayCount}. Cada confirmação ajuda a acompanhar sua rotina.`;
@@ -510,6 +543,7 @@
     // CONTROLES DO SIMULADOR DA BANCA (BARRA FLUTUANTE)
     // ==========================================================================
     function selectActiveMedication(index) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       state.activeMedIndex = index;
       renderElderlyView();
     }
@@ -522,7 +556,7 @@
         btn.className = 'px-3 py-1.5 rounded-xl font-semibold text-xs bg-[#DC2626] text-white flex items-center gap-1.5 shadow-xs transition';
         addTelegramMessage(
           '⚠️ Bloqueio de Polifarmácia Acionado',
-          'A dose das 08:00 atrasou excessivamente e encostou na janela das 12:00. O botão do idoso foi bloqueado para evitar superdosagem.'
+          'A dose atual atrasou excessivamente e encostou na janela da próxima dose. O botão do idoso foi bloqueado para evitar superdosagem.'
         );
         showToast('Trava de Polifarmácia Ativa', 'Confirmação bloqueada por proximidade com a próxima dose.');
       } else {
@@ -604,8 +638,8 @@
             <div class="flex items-center space-x-3.5">
               <span class="font-mono-tech text-sm font-extrabold px-3 py-1.5 rounded-xl text-white" style="background-color: ${m.stripeHex}">${m.time}</span>
               <div>
-                <div class="font-bold text-sm text-[#1D1D1F]">${m.name}</div>
-                <div class="text-xs text-[#6E6E73]">${m.dose} • Adiamentos: ${m.snoozeCount}/${m.maxSnooze}</div>
+                <div class="font-bold text-sm text-[#1D1D1F]">${escapeHtml(m.name)}</div>
+                <div class="text-xs text-[#6E6E73]">${escapeHtml(m.dose)} • Adiamentos: ${m.snoozeCount}/${m.maxSnooze}</div>
               </div>
             </div>
             <div class="flex items-center space-x-2">
@@ -629,7 +663,7 @@
           <div class="notion-soft-callout p-4 ${isLow ? 'border-[#DC2626]/40 bg-[#FEE2E2]/25' : ''} space-y-2.5">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div class="flex items-center space-x-2">
-                <span class="font-bold text-sm text-[#1D1D1F]">${m.name}</span>
+                <span class="font-bold text-sm text-[#1D1D1F]">${escapeHtml(m.name)}</span>
                 ${isLow
                   ? '<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#FEE2E2] text-[#DC2626]">Reposição Necessária (RF08)</span>'
                   : '<span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#E8F8F0] text-[#15803D]">Estoque Seguro</span>'}
@@ -659,8 +693,8 @@
             <span class="font-bold text-[#0066CC]">MedAssist Bot</span>
             <span class="font-mono-tech">${msg.time}</span>
           </div>
-          <div class="font-bold text-xs text-[#1D1D1F]">${msg.title}</div>
-          <p class="text-xs text-[#6E6E73] leading-relaxed">${msg.body}</p>
+          <div class="font-bold text-xs text-[#1D1D1F]">${escapeHtml(msg.title)}</div>
+          <p class="text-xs text-[#6E6E73] leading-relaxed">${escapeHtml(msg.body)}</p>
         </div>
       `).join('');
     }
@@ -738,7 +772,9 @@
         `${name} agendado para ${time}. Leiturabilidade Flesch validada: ${calculateFleschPtBr(bula).score}.`
       );
 
+      renderElderlyView();
       renderFamilyView();
+      renderCareJourney();
       showToast('Medicamento Cadastrado', `${name} foi adicionado e sincronizado com o Watchdog.`);
     }
 
@@ -746,13 +782,13 @@
     // VISÃO 3: LABORATÓRIO DE ENSAIOS E EXPORTAÇÃO CSV (RF09 / RF10)
     // ==========================================================================
     function appendTechnicalLog(scenario, scheduled, fired, delivered, latencyMs, channel, status) {
-      const id = `EV-00${state.technicalLogs.length + 1}`;
+      const id = `EV-${String(state.technicalLogs.length + 1).padStart(3, '0')}`;
       state.technicalLogs.unshift({ id, scenario, scheduled, fired, delivered, latencyMs, channel, status });
       if (state.activeTab === 'lab') renderLabView();
     }
 
     function simulateTechnicalScenario(scenarioCode) {
-      const baseTime = new Date().toTimeString().split(' ')[0];
+      const start = new Date();
       const profiles = {
         'C1_APP_ABERTO': { driftMs: 130, latencyMs: 1150, channel: 'Local + Push + Telegram' },
         'C2_TELA_BLOQUEADA': { driftMs: 270, latencyMs: 1540, channel: 'FullScreen Intent + Telegram' },
@@ -763,12 +799,14 @@
       const p = profiles[scenarioCode] || profiles['C1_APP_ABERTO'];
       const jitter = Math.floor(Math.random() * 160);
       const finalLatency = p.latencyMs + jitter;
+      const firedAt = new Date(start.getTime() + p.driftMs);
+      const deliveredAt = new Date(firedAt.getTime() + finalLatency);
 
       appendTechnicalLog(
         scenarioCode,
-        baseTime,
-        `${baseTime}.${p.driftMs}`,
-        `${baseTime}.${finalLatency}`,
+        fmtTime(start),
+        fmtTime(firedAt),
+        fmtTime(deliveredAt),
         finalLatency,
         p.channel,
         'ENTREGUE'
@@ -805,13 +843,19 @@
       const total = state.technicalLogs.length;
       const avgLat = Math.round(state.technicalLogs.reduce((acc, l) => acc + l.latencyMs, 0) / total);
       document.getElementById('labTotalEvents').textContent = String(total);
-      document.getElementById('labAvgLatency').textContent = `${avgLat} ms`;
+      document.getElementById('labAvgLatency').textContent = `${avgLat.toLocaleString('pt-BR')} ms`;
+      const ok = state.technicalLogs.filter(l => ['ENTREGUE', 'CONFIRMADO'].includes(l.status)).length;
+      document.getElementById('labDeliveryRate').textContent = `${(ok / total * 100).toFixed(1).replace('.', ',')}%`;
+      const under = state.technicalLogs.filter(l => l.latencyMs < 30000).length;
+      document.getElementById('labUnderLimit').textContent = `✓ ${Math.round(under / total * 100)}% abaixo do limite de 30 s`;
+      const drifts = state.technicalLogs.map(l => Math.abs(parseTimeMs(l.fired) - parseTimeMs(l.scheduled))).filter(d => d < 5000);
+      document.getElementById('labLocalDrift').textContent = drifts.length ? `± ${Math.round(drifts.reduce((x, y) => x + y, 0) / drifts.length)} ms` : '—';
     }
 
     function exportLogsToCSV() {
-      const headers = ['ID', 'CENARIO', 'HORARIO_PREVISTO', 'DISPARO_REAL', 'CHEGADA_FAMILIAR', 'LATENCIA_MS', 'CANAL', 'STATUS'];
+      const headers = ['ID', 'CENARIO', 'HORARIO_PREVISTO', 'DISPARO_REAL', 'CHEGADA_FAMILIAR', 'LATENCIA_MS', 'CANAL', 'STATUS', 'ORIGEM'];
       const rows = state.technicalLogs.map(l => [
-        l.id, l.scenario, l.scheduled, l.fired, l.delivered, l.latencyMs, `"${l.channel}"`, l.status
+        l.id, l.scenario, l.scheduled, l.fired, l.delivered, l.latencyMs, `"${l.channel}"`, l.status, 'SIMULADO'
       ]);
 
       const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
@@ -826,130 +870,6 @@
       URL.revokeObjectURL(url);
 
       showToast('CSV Exportado (RF10)', 'Planilha gerada para análise estatística do TCC.');
-    }
-
-    // ==========================================================================
-    // VISÃO 4: ARQUIVOS SEPARADOS ATUALIZADOS (APPLE HIG + NOTION ROUNDED)
-    // ==========================================================================
-    const separatedFiles = {
-      html: `<!-- =====================================================================
-     ARQUIVO 1: index.html (Design System Apple HIG + Notion Moderno)
-     Salve na mesma pasta que styles.css e app.js
-     ===================================================================== -->
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MedAssist • Apoio à Adesão Medicamentosa (TCC IFB)</title>
-  <script src="https://cdn.tailwindcss.com"><\/script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/@phosphor-icons/web"><\/script>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body class="min-h-screen flex flex-col">
-  <!-- Container Principal Renderizado pela Arquitetura Modular -->
-  <div id="app"></div>
-  <script src="app.js"><\/script>
-</body>
-</html>`,
-
-      css: `/* =====================================================================
-   ARQUIVO 2: styles.css (Apple HIG + Notion Warm Bento • Rounded Geometry)
-   Contraste WCAG 2.2 AAA e Frosted Glass
-   ===================================================================== */
-:root {
-  --bg-canvas: #F5F5F7;
-  --surface-card: #FFFFFF;
-  --text-ink: #1D1D1F;
-  --text-slate: #6E6E73;
-  --apple-blue: #0066CC;
-  --emerald-safe: #15803D;
-}
-
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background-color: var(--bg-canvas);
-  color: var(--text-ink);
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-}
-
-.bento-card {
-  background: var(--surface-card);
-  border-radius: 22px;
-  border: 1px solid rgba(0, 0, 0, 0.07);
-  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-.frosted-nav {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-}
-
-.btn-tactile {
-  border-radius: 14px;
-  min-height: 48px;
-  font-weight: 700;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.btn-tactile:active:not(:disabled) {
-  transform: scale(0.985);
-}`,
-
-      js: `// =====================================================================
-// ARQUIVO 3: app.js (Motor de Voz pt-BR, Leiturabilidade Flesch e Watchdog)
-// =====================================================================
-
-// 1. Índice de Facilidade de Leitura de Flesch adaptado ao Português
-export function calculateFleschPtBr(text) {
-  const sentences = text.split(/[.!?]+/).filter(Boolean).length || 1;
-  const wordsArray = text.trim().split(/\\s+/).filter(Boolean);
-  const words = wordsArray.length || 1;
-  let syllables = 0;
-  wordsArray.forEach(w => {
-    const m = w.toLowerCase().match(/[aeiouáéíóúâêôãõü]+/gi);
-    syllables += m ? m.length : 1;
-  });
-  const score = 248.835 - (1.015 * (words / sentences)) - (84.6 * (syllables / words));
-  return Math.max(15, Math.min(98, Math.round(score * 10) / 10));
-}
-
-// 2. Síntese de Voz Nativa (Web Speech API) para a Bula Traduzida
-export function speakMedicationInstruction(text) {
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pt-BR';
-    utterance.rate = 0.92;
-    window.speechSynthesis.speak(utterance);
-  }
-}`
-    };
-
-    let currentCodeKey = 'html';
-
-    function switchCodeFile(key) {
-      currentCodeKey = key;
-      ['html', 'css', 'js'].forEach(k => {
-        const tab = document.getElementById(`codeTab-${k}`);
-        if (k === key) tab.classList.add('active');
-        else tab.classList.remove('active');
-      });
-      document.getElementById('codeDisplayArea').textContent = separatedFiles[key];
-    }
-
-    function copyCurrentCodeBlock() {
-      const text = separatedFiles[currentCodeKey];
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      showToast('Arquivo Copiado', `O código de ${currentCodeKey.toUpperCase()} foi copiado para a área de transferência.`);
     }
 
     // ==========================================================================

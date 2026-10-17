@@ -19,3 +19,31 @@ Gamificação:
 
 Importante para o TCC:
 Este é um protótipo de interface. O progresso é salvo localmente no navegador, não sincroniza entre dispositivos e não comprova que a pessoa realmente tomou o medicamento — registra a confirmação feita no app. Os dados e orientações medicamentosas de demonstração devem ser validados com profissional de saúde. Não use o bloqueio de dose como orientação clínica real.
+
+
+---------------------------------------------------------------
+REVISÃO — O QUE FOI MELHORADO
+---------------------------------------------------------------
+Correções:
+- Removido texto em Markdown ("```" e "Principais melhorias...") que aparecia depois de </html>.
+- Ícones corrigidos (ph-chart-polar, ph-seal-check): antes não apareciam.
+- Segurança: nomes/posologia/bula digitados no cadastro agora são escapados (antes permitiam injeção de HTML).
+- Medicamentos cadastrados agora aparecem no seletor do simulador e atualizam o progresso do dia.
+- Barra de progresso (aria-valuemax) acompanha o número real de medicamentos.
+- Trava de polifarmácia usa os horários reais (antes eram "08:00" e "12:00" fixos).
+- Leitura por voz é interrompida ao trocar de aba ou de medicamento.
+
+Honestidade científica (importante para a banca):
+- Removida a aba "Código Separado": mostrava código diferente do real.
+- Removida a alegação "WCAG 2.2 AAA (contraste > 14:1)", que não foi medida. Meça com uma ferramenta
+  (ex.: WAVE, axe DevTools, Lighthouse) antes de afirmar conformidade.
+- Sequência e semana ("SEG-QUI") agora vêm dos dados reais; antes eram valores fixos de exemplo.
+- Laboratório: KPIs (entrega, latência, desvio, % < 30 s) agora são calculados dos registros; carimbos de
+  tempo coerentes; aviso "Dados simulados" e coluna ORIGEM=SIMULADO no CSV. Os ensaios NÃO são medições
+  reais de FCM/Telegram: para o TCC, substitua por medições em dispositivos reais.
+
+Acessibilidade:
+- Textos pequenos maiores e mais escuros na tela do idoso; foco visível; respeita "reduzir movimento";
+  avisos (toast) anunciados por leitores de tela.
+
+Requer internet para carregar Tailwind, fontes e ícones (CDN).

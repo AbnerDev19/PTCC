@@ -251,3 +251,15 @@ button:focus-visible { outline: 3px solid #477e8b !important; outline-offset: 3p
   .game-points { width: 100%; align-items: center !important; }
   .segmented-control { max-width: 100%; }
 }
+
+
+/* ===== Melhorias de acessibilidade e legibilidade (público idoso) ===== */
+#view-elderly .text-xs { font-size: 14px; line-height: 1.45; }
+#view-elderly .text-\[10px\], #view-elderly .text-\[11px\] { font-size: 12px; }
+#view-elderly .text-\[\#6E6E73\] { color: #4A5559; }
+a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #477e8b; outline-offset: 2px; }
+.game-points strong { font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) {
+  .active-dose-glow, .wave-bar { animation: none !important; }
+  .bento-card, .btn-tactile, button { transition: none !important; }
+}
