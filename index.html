@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MedAssist • Adesão Medicamentosa &amp; Educação em Saúde — TCC IFB</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Phosphor Icons -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<link href="styles.css" rel="stylesheet"/></head>
+<body class="min-h-screen flex flex-col selection:bg-[#0066CC] selection:text-white">
+<!-- ==========================================================================
+       HEADER COM FROSTED GLASS + APPLE SEGMENTED NAVIGATION
+       ========================================================================== -->
+<header class="frosted-nav sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+<!-- Identidade do Projeto -->
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0066CC] to-[#004499] text-white flex items-center justify-center shadow-sm">
+<i class="ph-fill ph-pill text-xl"></i>
+</div>
+<div>
+<div class="flex items-center space-x-2">
+<span class="font-display font-bold tracking-tight text-base text-[#1D1D1F]">MedAssist</span>
+<span class="font-mono-tech text-[11px] font-semibold bg-[#0066CC]/10 text-[#0066CC] px-2.5 py-0.5 rounded-full">
+                TCC IFB • v3.0
+              </span>
+</div>
+<p class="text-xs text-[#6E6E73]">Abner Oliveira Mota • Tecnologia em Sistemas para Internet</p>
+</div>
+</div>
+<!-- Relógio Mobile -->
+<div class="flex lg:hidden items-center space-x-2 bg-black/5 px-3 py-1.5 rounded-full">
+<span class="w-2 h-2 rounded-full bg-[#15803D]" id="mobileConnDot"></span>
+<span class="font-mono-tech text-xs font-semibold text-[#1D1D1F]" id="mobileClock">08:00</span>
+</div>
+</div>
+<!-- Segmented Control (4 Visões) -->
+<nav aria-label="Modos do Protótipo" class="segmented-control overflow-x-auto max-w-full">
+<button class="segmented-item active" id="tab-elderly" onclick="switchTab('elderly')">
+<i class="ph-fill ph-user-circle text-base text-[#0066CC]"></i>
+<span>1. Interface do Idoso</span>
+</button>
+<button class="segmented-item" id="tab-family" onclick="switchTab('family')">
+<i class="ph-fill ph-users-three text-base"></i>
+<span>2. Painel Familiar</span>
+<span class="hidden font-mono-tech text-[10px] bg-[#DC2626] text-white px-1.5 py-0.2 rounded-full font-bold" id="familyAlertBadge">!</span>
+</button>
+<button class="segmented-item" id="tab-lab" onclick="switchTab('lab')">
+<i class="ph-fill ph-chart-Polar text-base"></i>
+<span>3. Lab de Avaliação</span>
+</button>
+<button class="segmented-item" id="tab-code" onclick="switchTab('code')">
+<i class="ph-fill ph-code-block text-base"></i>
+<span>4. Código Separado</span>
+</button>
+</nav>
+<!-- Indicadores de Status Desktop -->
+<div class="hidden lg:flex items-center space-x-2.5">
+<div class="flex items-center space-x-2 bg-white/80 border border-black/5 px-3.5 py-1.5 rounded-full shadow-2xs">
+<span class="w-2.5 h-2.5 rounded-full bg-[#15803D] animate-pulse" id="headerConnDot"></span>
+<span class="text-xs font-semibold text-[#1D1D1F]" id="headerConnLabel">Watchdog: Online</span>
+<span class="text-xs text-[#6E6E73] font-mono-tech border-l border-black/10 pl-2" id="headerBattery">88%</span>
+</div>
+<div class="bg-[#1D1D1F] text-white px-3.5 py-1.5 rounded-full font-mono-tech text-xs font-semibold shadow-2xs" id="liveClock">
+          08:00:00
+        </div>
+</div>
+</div>
+</header>
+<!-- ==========================================================================
+       BARRA FLUTUANTE DE SIMULAÇÃO PARA A BANCA (DOCK DE TESTES RÁPIDOS)
+       ========================================================================== -->
+<div class="max-w-7xl w-full mx-auto px-4 sm:px-6 pt-4">
+<div class="frosted-pill-bar rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+<div class="flex items-center space-x-2">
+<span class="bg-[#1D1D1F] text-white font-semibold px-2.5 py-1 rounded-full text-[11px] flex items-center gap-1.5">
+<i class="ph-fill ph-sliders-horizontal"></i> Simulador da Banca
+        </span>
+<span class="text-[#6E6E73] hidden md:inline">Alterne medicamentos ou simule condições críticas em tempo real:</span>
+</div>
+<div class="flex flex-wrap items-center gap-1.5">
+<!-- Seletor de Medicamentos -->
+<button class="px-3 py-1.5 rounded-xl font-semibold text-xs bg-[#0066CC] text-white shadow-xs transition" id="medSwitch-0" onclick="selectActiveMedication(0)">
+          08:00 • Losartana
+        </button>
+<button class="px-3 py-1.5 rounded-xl font-medium text-xs bg-black/5 text-[#1D1D1F] hover:bg-black/10 transition" id="medSwitch-1" onclick="selectActiveMedication(1)">
+          12:00 • Metformina
+        </button>
+<button class="px-3 py-1.5 rounded-xl font-medium text-xs bg-black/5 text-[#1D1D1F] hover:bg-black/10 transition" id="medSwitch-2" onclick="selectActiveMedication(2)">
+          20:00 • Sinvastatina
+        </button>
+<span class="text-black/15 mx-1 hidden sm:inline">|</span>
+<!-- Simulador de Polifarmácia -->
+<button class="px-3 py-1.5 rounded-xl font-semibold text-xs bg-white border border-black/10 text-[#1D1D1F] hover:bg-[#FEF3C7]/60 flex items-center gap-1.5 transition" id="btnPolyLock" onclick="togglePolypharmacyLock()">
+<i class="ph-fill ph-warning-circle text-[#D97706] text-sm"></i>
+<span>Atraso Crítico (Polifarmácia)</span>
+</button>
+<!-- Simulador de Modo Offline -->
+<button class="px-3 py-1.5 rounded-xl font-semibold text-xs bg-white border border-black/10 text-[#1D1D1F] hover:bg-[#FEE2E2]/60 flex items-center gap-1.5 transition" id="btnOfflineSim" onclick="toggleOfflineMode()">
+<i class="ph-fill ph-wifi-slash text-[#DC2626] text-sm"></i>
+<span>Idoso Offline</span>
+</button>
+<!-- Resetar Dose -->
+<button class="px-2.5 py-1.5 rounded-xl font-medium text-xs text-[#6E6E73] hover:text-[#1D1D1F] hover:bg-black/5 transition" onclick="resetCurrentDoseState()" title="Restaurar estado da dose">
+<i class="ph-bold ph-arrow-counter-clockwise"></i> Resetar
+        </button>
+</div>
+</div>
+</div>
+<!-- ==========================================================================
+       CONTEÚDO PRINCIPAL (4 VISÕES MODULARES EM BENTO GRID)
+       ========================================================================== -->
+<main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+<!-- ========================================================================
+         VISÃO 1: INTERFACE DO IDOSO (WCAG 2.2 AAA + EDUCAÇÃO EM SAÚDE)
+         ======================================================================== -->
+<section class="space-y-6" id="view-elderly">
+<!-- Topo Saudação + Selo de Acessibilidade -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-[#E8F8F0] text-[#15803D]">
+<i class="ph-fill ph-check-circle"></i> Acessibilidade WCAG 2.2 AAA (Contraste &gt; 14:1)
+            </span>
+<span class="text-xs font-medium text-[#6E6E73] bg-white/80 px-3 py-1 rounded-full border border-black/5">
+              Paciente: Sr. José Oliveira (74 anos)
+            </span>
+</div>
+<h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#1D1D1F] mt-2">
+            Bom dia, Sr. José. Hora do seu cuidado.
+          </h1>
+</div>
+<!-- Card Compacto de Voz Assistiva -->
+<div class="bento-card px-4 py-3 flex items-center space-x-3 self-start md:self-auto">
+<div class="w-10 h-10 rounded-xl bg-[#0066CC]/10 text-[#0066CC] flex items-center justify-center">
+<i class="ph-fill ph-speaker-high text-xl"></i>
+</div>
+<div>
+<div class="text-xs font-bold text-[#1D1D1F]">Leitura por Voz Ativa</div>
+<div class="text-[11px] text-[#6E6E73]">Toque no botão de áudio para ouvir</div>
+</div>
+</div>
+</div>
+<!-- PAINEL DE PROGRESSO E CONQUISTAS: GAMIFICAÇÃO ACOLHEDORA -->
+<div class="bento-card elder-game-card p-5 sm:p-7" id="elderGamePanel" aria-live="polite">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+    <div class="flex items-center gap-4">
+      <div class="game-avatar" aria-hidden="true"><i class="ph-fill ph-sparkle"></i></div>
+      <div>
+        <p class="text-sm font-bold text-[#0066CC] uppercase tracking-wide">Minha jornada de cuidado</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Cada cuidado conta!</h2>
+        <p class="text-lg text-[#41414A] mt-1" id="gameEncouragement">Vamos cuidar de você, um horário de cada vez.</p>
+      </div>
+    </div>
+    <div class="game-points">
+      <span class="text-sm font-bold">MEUS PONTOS</span>
+      <strong id="gamePoints">0</strong>
+      <span class="text-sm">pontos de cuidado</span>
+    </div>
+  </div>
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="game-progress-box">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="text-lg font-extrabold">Progresso de hoje</h3>
+        <span class="text-base font-bold" id="gameTodayCount">0 de 3 cuidados</span>
+      </div>
+      <div class="game-progress-track mt-3" role="progressbar" aria-label="Cuidados confirmados hoje" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" id="gameProgressBar"><span id="gameProgressFill"></span></div>
+      <p class="text-base mt-3" id="gameTodayMessage">Quando confirmar um cuidado, seu progresso será atualizado aqui.</p>
+    </div>
+    <div class="game-progress-box">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="text-lg font-extrabold">Minha sequência</h3>
+        <span class="game-streak"><i class="ph-fill ph-fire"></i> <span id="gameStreak">0 dias</span></span>
+      </div>
+      <p class="text-base mt-3">Sua sequência cresce com constância. Se algum dia não sair como esperado, tudo bem: você pode recomeçar.</p>
+    </div>
+  </div>
+  <div class="mt-5">
+    <h3 class="text-lg font-extrabold mb-3">Conquistas especiais</h3>
+    <div class="game-achievements" id="gameAchievements">
+      <div class="achievement locked" id="achievement-first"><span class="achievement-icon"><i class="ph-fill ph-hand-heart"></i></span><span><strong>Primeiro cuidado</strong><small>Confirme seu primeiro horário</small></span></div>
+      <div class="achievement locked" id="achievement-day"><span class="achievement-icon"><i class="ph-fill ph-sun"></i></span><span><strong>Dia completo</strong><small>Confirme os 3 horários do dia</small></span></div>
+      <div class="achievement locked" id="achievement-streak"><span class="achievement-icon"><i class="ph-fill ph-medal"></i></span><span><strong>Constância de ouro</strong><small>Complete 7 dias de cuidado</small></span></div>
+    </div>
+  </div>
+  <p class="text-sm text-[#55555D] mt-4">Os pontos são um incentivo, não uma avaliação. Não há punição por atrasos ou esquecimentos. Em caso de dúvida sobre uma dose, siga a orientação do profissional de saúde.</p>
+</div>
+
+<!-- BENTO CARD 1: ESCUDO DE PROTEÇÃO ATIVO (EDUCAÇÃO SOBRE PONTUALIDADE) -->
+<div class="bento-card p-5 sm:p-6" id="protectionShieldBlock">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+<div class="flex items-start sm:items-center space-x-4">
+<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#E8F8F0] text-[#15803D] flex items-center justify-center shrink-0 shadow-xs" id="shieldIconBox">
+<i class="ph-fill ph-shield-check text-3xl sm:text-4xl" id="shieldIcon"></i>
+</div>
+<div class="space-y-1">
+<div class="flex flex-wrap items-center gap-2">
+<span class="text-xs font-bold px-3 py-1 rounded-full bg-[#E8F8F0] text-[#15803D]" id="shieldStatusBadge">
+                  Escudo de Proteção Ativo • 100%
+                </span>
+<span class="text-xs font-semibold text-[#6E6E73]">
+                  🔥 5 dias seguidos no horário certo
+                </span>
+</div>
+<p class="text-base sm:text-lg font-semibold text-[#1D1D1F] leading-snug pt-0.5" id="shieldEduText">
+                Tomar o remédio sempre na mesma hora mantém o efeito protetor estável no seu sangue o dia inteiro.
+              </p>
+</div>
+</div>
+<!-- Pílulas de Constância da Semana -->
+<div class="flex items-center gap-2 shrink-0 bg-[#F5F5F7] p-2 rounded-2xl border border-black/5">
+<div class="w-11 py-2 rounded-xl bg-white text-center shadow-2xs">
+<div class="text-[10px] font-bold text-[#6E6E73]">SEG</div>
+<i class="ph-fill ph-check-circle text-[#15803D] text-base mt-0.5"></i>
+</div>
+<div class="w-11 py-2 rounded-xl bg-white text-center shadow-2xs">
+<div class="text-[10px] font-bold text-[#6E6E73]">TER</div>
+<i class="ph-fill ph-check-circle text-[#15803D] text-base mt-0.5"></i>
+</div>
+<div class="w-11 py-2 rounded-xl bg-white text-center shadow-2xs">
+<div class="text-[10px] font-bold text-[#6E6E73]">QUA</div>
+<i class="ph-fill ph-check-circle text-[#15803D] text-base mt-0.5"></i>
+</div>
+<div class="w-11 py-2 rounded-xl bg-white text-center shadow-2xs">
+<div class="text-[10px] font-bold text-[#6E6E73]">QUI</div>
+<i class="ph-fill ph-check-circle text-[#15803D] text-base mt-0.5"></i>
+</div>
+<div class="w-14 py-2 rounded-xl bg-[#0066CC] text-white text-center shadow-xs" id="todayStamp">
+<div class="text-[10px] font-bold uppercase opacity-90">HOJE</div>
+<div class="font-mono-tech text-xs font-bold mt-0.5" id="todayStampIcon">08:00</div>
+</div>
+</div>
+</div>
+</div>
+<!-- BENTO CARD 2: CARTÃO PRINCIPAL DO MEDICAMENTO (BULA TRADUZIDA + VOZ + CONFIRMAÇÃO) -->
+<div class="bento-card active-dose-glow overflow-hidden" id="mainDoseContainer">
+<!-- Cabeçalho Suave do Horário da Dose -->
+<div class="bg-[#1D1D1F] text-white px-6 py-4 flex flex-wrap items-center justify-between gap-3 transition-colors duration-300" id="doseHeaderBar">
+<div class="flex items-center space-x-3">
+<span class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">
+<i class="ph-fill ph-bell-ringing text-xl" id="doseHeaderIcon"></i>
+</span>
+<div>
+<span class="text-sm sm:text-base font-bold tracking-wide block" id="doseHeaderStatusText">
+                Horário do Medicamento • Lembrete Ativo
+              </span>
+<span class="text-xs text-white/75 block" id="doseHeaderSubText">
+                Confira a cor da caixa abaixo antes de tomar
+              </span>
+</div>
+</div>
+<div class="flex items-center space-x-2 bg-white text-[#1D1D1F] px-4 py-1.5 rounded-full shadow-xs">
+<i class="ph-bold ph-clock text-base text-[#0066CC]"></i>
+<span class="font-mono-tech text-lg sm:text-xl font-extrabold" id="elderlyDoseTime">08:00</span>
+</div>
+</div>
+<!-- Corpo Principal do Medicamento -->
+<div class="p-6 sm:p-8 space-y-7">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-center">
+<!-- Coluna 1 (4 cols): Ilustração Visual 3D-Styled da Caixa + Comprimido (Tangza, 2022) -->
+<div class="lg:col-span-4 notion-soft-callout p-6 flex flex-col items-center justify-center text-center">
+<span class="text-xs font-bold uppercase tracking-wider text-[#6E6E73] mb-3">
+                Identificação Visual da Caixa
+              </span>
+<!-- Caixa do Medicamento com Sombra Suave e Faixa Dinâmica -->
+<div class="w-full max-w-[220px] bg-white rounded-2xl border border-black/10 shadow-md p-4 text-left relative overflow-hidden">
+<div class="h-6 -mx-4 -mt-4 mb-3 px-4 flex items-center justify-between bg-[#0066CC] text-white" id="visualBoxStripe">
+<span class="text-[10px] font-bold uppercase tracking-wider" id="visualStripeText">FAIXA AZUL</span>
+<i class="ph-fill ph-SealCheck text-xs"></i>
+</div>
+<div class="font-display font-extrabold text-base text-[#1D1D1F]" id="visualBoxTitle">
+                  LOSARTANA 50mg
+                </div>
+<div class="text-xs text-[#6E6E73] mt-0.5">Uso Contínuo • 30 comp.</div>
+<!-- Representação Visual do Comprimido -->
+<div class="mt-4 pt-3 border-t border-black/5 flex items-center justify-between">
+<span class="text-xs font-semibold text-[#1D1D1F]" id="visualPillDesc">1 comp. redondo branco</span>
+<span class="w-7 h-7 rounded-full bg-gradient-to-b from-white to-gray-100 border-2 border-gray-300 shadow-inner inline-block flex items-center justify-center">
+<span class="w-4 h-[1.5px] bg-gray-300 block"></span>
+</span>
+</div>
+</div>
+<!-- Pílula de Identificação de Cor -->
+<div class="mt-4 px-4 py-1.5 rounded-full text-xs font-bold bg-[#0066CC]/12 text-[#0066CC]" id="visualColorLabel">
+                Caixa Branca com Faixa Azul
+              </div>
+</div>
+<!-- Coluna 2 (8 cols): Nome Grande, Posologia, Bula Traduzida e Botão de Voz -->
+<div class="lg:col-span-8 space-y-5">
+<div>
+<span class="text-xs font-bold uppercase tracking-wider text-[#0066CC]">
+                  Medicamento Prescrito
+                </span>
+<h2 class="text-3xl sm:text-5xl font-extrabold text-[#1D1D1F] tracking-tight mt-1" id="elderlyMedName">
+                  Losartana Potássica 50mg
+                </h2>
+<div class="mt-3 inline-flex items-center gap-2 bg-[#F5F5F7] border border-black/8 text-[#1D1D1F] text-lg sm:text-xl font-bold px-4 py-2 rounded-xl">
+<i class="ph-fill ph-pill text-[#0066CC] text-2xl"></i>
+<span id="elderlyMedDose">Tomar 1 comprimido com água</span>
+</div>
+</div>
+<!-- BULA TRADUZIDA / MICROLEARNING (Pizzol et al., 2019 + Gautério-Abreu et al., 2016) -->
+<div class="notion-soft-callout p-5 sm:p-6 space-y-2.5 border-l-4 border-l-[#0066CC]">
+<div class="flex flex-wrap items-center justify-between gap-2">
+<span class="text-xs font-bold uppercase tracking-wider text-[#0066CC] flex items-center gap-1.5">
+<i class="ph-fill ph-book-open-text text-base"></i>
+                    Para que serve e como tomar (Bula Traduzida)
+                  </span>
+<span class="font-mono-tech text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E8F8F0] text-[#15803D]" id="elderlyFleschBadge">
+                    Leitura Flesch: 84 (Muito Fácil)
+                  </span>
+</div>
+<p class="text-xl sm:text-2xl font-semibold text-[#1D1D1F] leading-relaxed" id="elderlyBulaSimplified">
+                  Serve para proteger o seu coração e controlar a pressão alta. Tome 1 comprimido inteiro com um copo cheio de água.
+                </p>
+</div>
+<!-- BOTÃO TÁTIL DE LEITURA EM VOZ ALTA (WEB SPEECH API) -->
+<button class="btn-tactile w-full py-4 px-6 bg-[#F5F5F7] hover:bg-[#EAEAEF] text-[#1D1D1F] border border-black/10 text-lg sm:text-xl gap-3" id="btnSpeakInstruction" onclick="speakCurrentMedication()">
+<i class="ph-fill ph-speaker-high text-2xl text-[#0066CC]"></i>
+<span id="btnSpeakText">Ouvir Instrução em Voz Alta</span>
+<!-- Indicador de Onda Sonora (Ativado durante fala) -->
+<span class="hidden items-center gap-1 ml-2 text-[#0066CC] h-5" id="ttsWaveform">
+<span class="wave-bar"></span>
+<span class="wave-bar"></span>
+<span class="wave-bar"></span>
+<span class="wave-bar"></span>
+</span>
+</button>
+</div>
+</div>
+<!-- ==================================================================
+               ALERTA DE TRAVA DE SEGURANÇA (POLIFARMÁCIA / ATRASO CRÍTICO)
+               ================================================================== -->
+<div class="hidden rounded-2xl bg-[#FEE2E2]/90 border-2 border-[#DC2626] p-6 space-y-2.5" id="polypharmacyWarningBox">
+<div class="flex items-center space-x-3 text-[#DC2626]">
+<i class="ph-fill ph-shield-warning text-3xl sm:text-4xl"></i>
+<h3 class="text-xl sm:text-2xl font-extrabold">
+                Trava de Segurança: Horário Muito Próximo da Próxima Dose
+              </h3>
+</div>
+<p class="text-lg sm:text-xl font-medium text-[#1D1D1F] leading-relaxed">
+              Esta dose das <strong>08:00</strong> atrasou mais de 3 horas e está muito perto do remédio das <strong>12:00</strong>. Para evitar excesso de medicação no sangue, aguarde o contato da sua família.
+            </p>
+<div class="text-xs font-bold text-[#DC2626] uppercase tracking-wider pt-1 flex items-center gap-1.5">
+<i class="ph-bold ph-paper-plane-tilt"></i> Notificação enviada automaticamente para Mariana (Filha)
+            </div>
+</div>
+<!-- ==================================================================
+               PÍLULA EDUCATIVA PÓS-CONFIRMAÇÃO (EXIBIDA APÓS CLICAR EM "JÁ TOMEI")
+               ================================================================== -->
+<div class="hidden rounded-2xl bg-[#E8F8F0] border border-[#15803D]/30 p-6 space-y-3 transition-all" id="postConfirmationEduCard">
+<div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#15803D]/15 pb-3">
+<div class="flex items-center space-x-2.5 text-[#15803D]">
+<i class="ph-fill ph-check-circle text-3xl"></i>
+<span class="text-xl font-extrabold">Dose Registrada com Sucesso!</span>
+</div>
+<span class="font-mono-tech text-xs font-bold bg-[#15803D] text-white px-3 py-1 rounded-full" id="confirmedTimestampBadge">
+                Confirmado às 08:01 • Estoque atualizado (-1)
+              </span>
+</div>
+<div class="space-y-1">
+<span class="text-xs font-bold uppercase tracking-wider text-[#15803D] flex items-center gap-1.5">
+<i class="ph-fill ph-lightbulb"></i> Pílula Educativa de Cuidado (Cintra et al., 2010)
+              </span>
+<p class="text-xl sm:text-2xl font-bold text-[#1D1D1F] leading-relaxed" id="postDoseTipText">
+                Muito bem! Levante-se devagar da cama ou do sofá nas próximas horas para evitar tontura. Mesmo que a pressão esteja boa amanhã, continue tomando no horário.
+              </p>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-[#15803D] font-medium">
+<span>✓ Proteção contra toque duplo ativada (evita baixa duplicada no estoque).</span>
+<span class="font-mono-tech font-bold">Índice Flesch: 82 (Muito Fácil)</span>
+</div>
+</div>
+<!-- ==================================================================
+               BOTÕES PRINCIPAIS DE AÇÃO (ALVOS DE TOQUE GIGANTES >= 64PX)
+               ================================================================== -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 pt-2">
+<!-- Botão Principal: Já Tomei Meu Remédio -->
+<button class="btn-tactile md:col-span-8 min-h-[74px] px-6 py-5 bg-[#15803D] hover:bg-[#126B32] text-white text-xl sm:text-2xl shadow-md" id="btnConfirmDose" onclick="confirmMedicationDose()">
+<i class="ph-fill ph-check-circle text-3xl mr-3" id="btnConfirmIcon"></i>
+<span id="btnConfirmText">Já Tomei Meu Remédio (08:00)</span>
+</button>
+<!-- Botão Secundário: Adiar 5 Minutos (Máx 3x) -->
+<button class="btn-tactile md:col-span-4 min-h-[74px] px-5 py-4 bg-[#F5F5F7] hover:bg-[#EAEAEF] text-[#1D1D1F] border border-black/10 flex flex-col items-center justify-center" id="btnSnoozeDose" onclick="snoozeMedicationDose()">
+<div class="flex items-center text-base sm:text-lg font-bold">
+<i class="ph-bold ph-clock-clockwise text-xl mr-2 text-[#D97706]"></i>
+<span>Lembrar em 5 min</span>
+</div>
+<span class="text-xs text-[#6E6E73] font-medium mt-0.5" id="snoozeCounterLabel">
+                Adiamentos restantes: 3 de 3
+              </span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================
+         VISÃO 2: PAINEL DO FAMILIAR & CUIDADO (BENTO DASHBOARD)
+         ======================================================================== -->
+<section class="hidden space-y-6" id="view-family">
+<!-- Topo do Painel Familiar -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-xs font-bold px-3 py-1 rounded-full bg-[#0066CC]/10 text-[#0066CC]">
+              Acompanhamento Familiar Remoto (RF01 / RF06)
+            </span>
+<span class="text-xs text-[#6E6E73]">Cuidadora vinculada: Mariana Mota (Filha)</span>
+</div>
+<h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1D1D1F] mt-1.5">
+            Painel de Adesão, Estoque e Escalonamento em Nuvem
+          </h2>
+</div>
+<button class="btn-tactile px-4 py-2.5 bg-[#DC2626] hover:bg-[#B91C1C] text-white text-xs shadow-xs self-start md:self-auto" onclick="triggerManualEscalationTest()">
+<i class="ph-bold ph-paper-plane-tilt mr-1.5 text-sm"></i> Simular Alerta Escalado no Telegram (RF05)
+        </button>
+</div>
+<!-- BENTO GRID SUPERIOR: TELEMETRIA WATCHDOG + CRONOGRAMA + CHAT TELEGRAM -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Coluna Esquerda (7 cols): Status Watchdog, Cronograma e Estoque -->
+<div class="lg:col-span-7 space-y-6">
+<!-- Cards de Telemetria Rápida (Heartbeat / Bateria / Adesão) -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="bento-card p-4">
+<div class="flex items-center justify-between text-xs text-[#6E6E73] font-medium">
+<span>Sinal do Aparelho</span>
+<i class="ph-fill ph-wifi-high text-[#15803D] text-base" id="famCardWifiIcon"></i>
+</div>
+<div class="font-display text-lg font-extrabold text-[#15803D] mt-1" id="familyPanelConnStatus">
+                Online • Sincronizado
+              </div>
+<div class="text-[11px] text-[#6E6E73] mt-1">Bateria do idoso: <strong>88%</strong></div>
+</div>
+<div class="bento-card p-4">
+<div class="flex items-center justify-between text-xs text-[#6E6E73] font-medium">
+<span>Doses Confirmadas Hoje</span>
+<i class="ph-fill ph-check-circle text-[#0066CC] text-base"></i>
+</div>
+<div class="font-display text-2xl font-extrabold text-[#1D1D1F] mt-1" id="metricConfirmedCount">
+                0 de 3
+              </div>
+<div class="text-[11px] text-[#6E6E73] mt-1">Adiamentos na dose atual: <strong id="metricSnoozeCount">0/3</strong></div>
+</div>
+<div class="bento-card p-4">
+<div class="flex items-center justify-between text-xs text-[#6E6E73] font-medium">
+<span>Alertas Enviados Hoje</span>
+<i class="ph-fill ph-bell-ringing text-[#D97706] text-base"></i>
+</div>
+<div class="font-display text-2xl font-extrabold text-[#1D1D1F] mt-1" id="metricFamilyAlerts">
+                0
+              </div>
+<div class="text-[11px] text-[#15803D] mt-1 font-medium">✓ Filtro anti-sobrecarga ativo</div>
+</div>
+</div>
+<!-- Bento Card: Cronograma do Dia -->
+<div class="bento-card p-5 sm:p-6 space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<i class="ph-fill ph-calendar-check text-xl text-[#0066CC]"></i>
+<h3 class="font-bold text-base text-[#1D1D1F]">Rotina de Medicação de Hoje</h3>
+</div>
+<span class="text-xs text-[#6E6E73]">Toque para inspecionar na tela do idoso</span>
+</div>
+<div class="space-y-2.5" id="familyScheduleList">
+<!-- Renderizado via JS -->
+</div>
+</div>
+<!-- Bento Card: Previsão de Estoque com Barras de Progresso (RF08) -->
+<div class="bento-card p-5 sm:p-6 space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<i class="ph-fill ph-package text-xl text-[#0066CC]"></i>
+<h3 class="font-bold text-base text-[#1D1D1F]">Previsão de Estoque e Alertas de Reposição (RF08)</h3>
+</div>
+<span class="text-xs text-[#6E6E73]">Dedução automática por confirmação</span>
+</div>
+<div class="space-y-3" id="familyStockList">
+<!-- Renderizado via JS -->
+</div>
+</div>
+</div>
+<!-- Coluna Direita (5 cols): Widget Simulador do Bot do Telegram (@MedAssistFamiliaBot) -->
+<div class="lg:col-span-5 flex flex-col">
+<div class="bento-card flex-1 flex flex-col overflow-hidden">
+<!-- Cabeçalho estilo App de Mensagens Moderno -->
+<div class="bg-gradient-to-r from-[#0066CC] to-[#0052A3] text-white px-5 py-4 flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+<i class="ph-fill ph-telegram-logo text-xl text-white"></i>
+</div>
+<div>
+<div class="font-bold text-sm">@MedAssistFamiliaBot</div>
+<div class="text-[11px] text-white/80 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#4ADE80] inline-block"></span>
+                    Watchdog Cloud Function • Ativo
+                  </div>
+</div>
+</div>
+<span class="font-mono-tech text-[10px] bg-white/15 px-2.5 py-1 rounded-full">RF05</span>
+</div>
+<!-- Explicação da Arquitetura Server-Side -->
+<div class="px-4 py-2.5 bg-[#F5F5F7] border-b border-black/5 text-xs text-[#6E6E73]">
+<strong>Garantia de Entrega:</strong> Mesmo que o celular do idoso fique sem bateria ou modo avião, o servidor detecta a falta de confirmação após os 3 adiamentos e notifica por aqui.
+            </div>
+<!-- Área de Bolhas de Chat -->
+<div class="p-4 space-y-3 flex-1 max-h-[430px] overflow-y-auto bg-[#FBFBFA]" id="telegramFeed">
+<!-- Renderizado via JS -->
+</div>
+<!-- Rodapé do Chat -->
+<div class="px-4 py-3 bg-white border-t border-black/5 flex items-center justify-between text-xs text-[#6E6E73]">
+<span>Proteção RF07: Sem repetição excessiva de alertas</span>
+<button class="text-[#0066CC] font-semibold hover:underline" onclick="clearTelegramFeed()">Limpar histórico</button>
+</div>
+</div>
+</div>
+</div>
+<!-- BENTO CARD INFERIOR: CADASTRO DE MEDICAMENTO + CALCULADORA FLESCH EM TEMPO REAL -->
+<div class="bento-card p-6 sm:p-7 space-y-5">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/5 pb-4">
+<div>
+<span class="text-xs font-bold uppercase tracking-wider text-[#0066CC]">
+              Cadastro conforme Prescrição Médica (RF02 + RNF06)
+            </span>
+<h3 class="text-xl font-extrabold text-[#1D1D1F] mt-0.5">
+              Adicionar Medicamento com Validação de Leiturabilidade Flesch
+            </h3>
+</div>
+<!-- Pílula de Pontuação Flesch ao Vivo -->
+<div class="bg-[#E8F8F0] border border-[#15803D]/20 px-4 py-2 rounded-2xl flex items-center space-x-3">
+<i class="ph-fill ph-sparkle text-xl text-[#15803D]"></i>
+<div>
+<div class="text-[10px] font-bold uppercase tracking-wider text-[#15803D]">Índice Flesch (Tempo Real)</div>
+<div class="font-mono-tech text-sm font-extrabold text-[#15803D]" id="liveFleschScore">
+                83.4 — Muito Fácil (Ideal para Idosos)
+              </div>
+</div>
+</div>
+</div>
+<form class="grid grid-cols-1 md:grid-cols-12 gap-4" id="medForm" onsubmit="handleAddMedication(event)">
+<div class="md:col-span-4">
+<label class="block text-xs font-bold text-[#1D1D1F] mb-1.5">Nome e Concentração *</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 focus:border-[#0066CC] focus:bg-white outline-none text-sm font-medium transition" id="inputMedName" required="" type="text" value="Atenolol 25mg"/>
+</div>
+<div class="md:col-span-3">
+<label class="block text-xs font-bold text-[#1D1D1F] mb-1.5">Posologia / Dose *</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 focus:border-[#0066CC] focus:bg-white outline-none text-sm font-medium transition" id="inputMedDose" required="" type="text" value="Tomar 1 comprimido"/>
+</div>
+<div class="md:col-span-2">
+<label class="block text-xs font-bold text-[#1D1D1F] mb-1.5">Horário *</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 focus:border-[#0066CC] focus:bg-white outline-none text-sm font-mono-tech font-bold transition" id="inputMedTime" required="" type="time" value="16:00"/>
+</div>
+<div class="md:col-span-3">
+<label class="block text-xs font-bold text-[#1D1D1F] mb-1.5">Estoque Inicial (Comp.) *</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 focus:border-[#0066CC] focus:bg-white outline-none text-sm font-mono-tech font-bold transition" id="inputMedStock" max="300" min="1" required="" type="number" value="6"/>
+</div>
+<div class="md:col-span-4">
+<label class="block text-xs font-bold text-[#1D1D1F] mb-1.5">Cor da Caixa (Apoio Visual) *</label>
+<select class="w-full px-3.5 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 focus:border-[#0066CC] focus:bg-white outline-none text-sm font-medium transition" id="inputMedColor">
+<option value="blue">Caixa Branca com Faixa Azul</option>
+<option value="amber">Caixa Branca com Faixa Amarela</option>
+<option value="green">Caixa Branca com Faixa Verde</option>
+<option value="red">Caixa Branca com Faixa Vermelha</option>
+</select>
+</div>
+<div class="md:col-span-4">
+<label class="block text-xs font-bold text-[#1D1D1F] mb-1.5">"Bula Traduzida" (Lida por Voz no Alarme) *</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 focus:border-[#0066CC] focus:bg-white outline-none text-sm font-medium transition" id="inputMedBula" oninput="updateLiveFlesch()" required="" type="text" value="Serve para manter o ritmo do coração calmo e a pressão boa. Tome com água."/>
+</div>
+<div class="md:col-span-4">
+<label class="block text-xs font-bold text-[#1D1D1F] mb-1.5">Pílula Educativa Pós-Dose *</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 focus:border-[#0066CC] focus:bg-white outline-none text-sm font-medium transition" id="inputMedTip" oninput="updateLiveFlesch()" required="" type="text" value="Muito bem! Não pare de tomar este remédio sem falar antes com o seu médico."/>
+</div>
+<div class="md:col-span-12 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-black/5">
+<span class="text-xs text-[#6E6E73] flex items-center gap-1.5">
+<i class="ph-fill ph-shield-check text-[#15803D] text-base"></i>
+<strong>Conformidade RNF06:</strong> O sistema apenas organiza horários prescritos e não realiza recomendação clínica de dosagem.
+            </span>
+<button class="btn-tactile px-6 py-3 bg-[#0066CC] hover:bg-[#0052A3] text-white text-xs shadow-sm" type="submit">
+<i class="ph-bold ph-plus-circle mr-2 text-base"></i> Cadastrar e Ativar Monitoramento
+            </button>
+</div>
+</form>
+</div>
+</section>
+<!-- ========================================================================
+         VISÃO 3: LABORATÓRIO DE AVALIAÇÃO TÉCNICA (MÉTRICAS DO TCC SEM CEP)
+         ======================================================================== -->
+<section class="hidden space-y-6" id="view-lab">
+<!-- Cabeçalho do Laboratório -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center space-x-2">
+<span class="text-xs font-bold px-3 py-1 rounded-full bg-[#0066CC]/10 text-[#0066CC]">
+              Ensaios Técnicos Controlados (Seção 3.4 • Sem Participantes Humanos)
+            </span>
+</div>
+<h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1D1D1F] mt-1.5">
+            Laboratório de Confiabilidade de Alertas, WCAG 2.2 e Exportação CSV
+          </h2>
+</div>
+<div class="flex flex-wrap items-center gap-2.5">
+<button class="btn-tactile px-4 py-2.5 bg-[#1D1D1F] hover:bg-black text-white text-xs shadow-xs" onclick="runBatchScenarioTests()">
+<i class="ph-fill ph-play mr-1.5"></i> Rodar Bateria nos 4 Cenários
+          </button>
+<button class="btn-tactile px-4 py-2.5 bg-[#15803D] hover:bg-[#126B32] text-white text-xs shadow-xs" onclick="exportLogsToCSV()">
+<i class="ph-bold ph-download-simple mr-1.5"></i> Exportar Planilha CSV (RF10)
+          </button>
+</div>
+</div>
+<!-- SIMULADOR DE CENÁRIOS DE FALHA (RNF02) -->
+<div class="bento-card p-6 space-y-4">
+<div class="flex flex-wrap items-center justify-between gap-2">
+<div>
+<h3 class="font-bold text-base text-[#1D1D1F]">Simulador de Cenários Críticos de Execução (RNF02 e RNF03)</h3>
+<p class="text-xs text-[#6E6E73]">Clique em um cenário para disparar um evento de teste e registrar o tempo exato de chegada ao familiar:</p>
+</div>
+<span class="font-mono-tech text-xs font-semibold px-3 py-1 rounded-full bg-[#E8F8F0] text-[#15803D]">
+            Meta RNF03: Latência &lt; 30.000 ms
+          </span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<button class="notion-soft-callout p-4 text-left hover:border-[#0066CC] hover:bg-white transition group" onclick="simulateTechnicalScenario('C1_APP_ABERTO')">
+<div class="flex items-center justify-between text-xs font-bold text-[#15803D]">
+<span>CENÁRIO 01</span>
+<i class="ph-bold ph-arrow-up-right group-hover:translate-x-0.5 transition"></i>
+</div>
+<div class="font-bold text-sm text-[#1D1D1F] mt-1">1. App Aberto (Baseline)</div>
+<p class="text-xs text-[#6E6E73] mt-1">Alarme local + Push FCM + Bot Telegram com conexão Wi-Fi/4G normal.</p>
+</button>
+<button class="notion-soft-callout p-4 text-left hover:border-[#0066CC] hover:bg-white transition group" onclick="simulateTechnicalScenario('C2_TELA_BLOQUEADA')">
+<div class="flex items-center justify-between text-xs font-bold text-[#0066CC]">
+<span>CENÁRIO 02</span>
+<i class="ph-bold ph-arrow-up-right group-hover:translate-x-0.5 transition"></i>
+</div>
+<div class="font-bold text-sm text-[#1D1D1F] mt-1">2. App Fechado / Tela Bloqueada</div>
+<p class="text-xs text-[#6E6E73] mt-1">Despertar via Full-Screen Intent nativo e escalonamento após 3 adiamentos.</p>
+</button>
+<button class="notion-soft-callout p-4 text-left hover:border-[#0066CC] hover:bg-white transition group" onclick="simulateTechnicalScenario('C3_MODO_AVIAO_WATCHDOG')">
+<div class="flex items-center justify-between text-xs font-bold text-[#D97706]">
+<span>CENÁRIO 03</span>
+<i class="ph-bold ph-arrow-up-right group-hover:translate-x-0.5 transition"></i>
+</div>
+<div class="font-bold text-sm text-[#1D1D1F] mt-1">3. Sem Internet (Watchdog Nuvem)</div>
+<p class="text-xs text-[#6E6E73] mt-1">Alarme toca offline no idoso; servidor detecta ausência de confirmação e avisa familiar.</p>
+</button>
+<button class="notion-soft-callout p-4 text-left hover:border-[#0066CC] hover:bg-white transition group" onclick="simulateTechnicalScenario('C4_DOZE_MODE_BATERIA')">
+<div class="flex items-center justify-between text-xs font-bold text-[#DC2626]">
+<span>CENÁRIO 04</span>
+<i class="ph-bold ph-arrow-up-right group-hover:translate-x-0.5 transition"></i>
+</div>
+<div class="font-bold text-sm text-[#1D1D1F] mt-1">4. Bateria Baixa (12%) / Doze Mode</div>
+<p class="text-xs text-[#6E6E73] mt-1">Agendamento exato via `setExactAndAllowWhileIdle` sob economia de energia.</p>
+</button>
+</div>
+</div>
+<!-- INDICADORES QUANTITATIVOS CONSOLIDADOS -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bento-card p-5">
+<div class="text-xs font-medium text-[#6E6E73]">Taxa de Entrega dos Alertas</div>
+<div class="font-display text-3xl font-extrabold text-[#15803D] mt-1" id="labDeliveryRate">100,0%</div>
+<div class="text-[11px] text-[#6E6E73] mt-1">Razão Recebidos / Disparados</div>
+</div>
+<div class="bento-card p-5">
+<div class="text-xs font-medium text-[#6E6E73]">Latência Média ao Familiar</div>
+<div class="font-display text-3xl font-extrabold text-[#1D1D1F] mt-1" id="labAvgLatency">1.445 ms</div>
+<div class="text-[11px] text-[#15803D] font-semibold mt-1">✓ 95% abaixo do limite de 30s</div>
+</div>
+<div class="bento-card p-5">
+<div class="text-xs font-medium text-[#6E6E73]">Desvio de Pontualidade Local</div>
+<div class="font-display text-3xl font-extrabold text-[#1D1D1F] mt-1" id="labLocalDrift">± 280 ms</div>
+<div class="text-[11px] text-[#6E6E73] mt-1">Diferença Horário Previsto vs. Real</div>
+</div>
+<div class="bento-card p-5">
+<div class="text-xs font-medium text-[#6E6E73]">Eventos Registrados no Log</div>
+<div class="font-display text-3xl font-extrabold text-[#0066CC] mt-1" id="labTotalEvents">4</div>
+<div class="text-[11px] text-[#6E6E73] mt-1">Prontos para tabulação estatística</div>
+</div>
+</div>
+<!-- TABELA DE LOGS DE EVENTOS (RF09) -->
+<div class="bento-card overflow-hidden">
+<div class="px-6 py-4 border-b border-black/5 flex flex-wrap items-center justify-between gap-2 bg-[#FBFBFA]">
+<div class="flex items-center space-x-2">
+<i class="ph-fill ph-table text-lg text-[#0066CC]"></i>
+<span class="font-bold text-sm text-[#1D1D1F]">Registro de Eventos de Disparo e Entrega (RF09)</span>
+</div>
+<span class="font-mono-tech text-xs text-[#6E6E73]">Timestamps com precisão de milissegundos</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse text-xs">
+<thead>
+<tr class="border-b border-black/5 bg-[#F5F5F7] text-[#6E6E73] font-semibold">
+<th class="py-3.5 px-5">ID</th>
+<th class="py-3.5 px-5">Cenário de Ensaio</th>
+<th class="py-3.5 px-5">Horário Previsto</th>
+<th class="py-3.5 px-5">Disparo Real</th>
+<th class="py-3.5 px-5">Chegada Familiar</th>
+<th class="py-3.5 px-5">Latência</th>
+<th class="py-3.5 px-5">Canal Acionado</th>
+<th class="py-3.5 px-5">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-black/5 font-mono-tech" id="technicalLogsTableBody">
+<!-- Renderizado via JS -->
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================================
+         VISÃO 4: CÓDIGO-FONTE SEPARADO (`index.html`, `styles.css`, `app.js`)
+         ======================================================================== -->
+<section class="hidden space-y-6" id="view-code">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<span class="text-xs font-bold px-3 py-1 rounded-full bg-[#0066CC]/10 text-[#0066CC]">
+            Modularização de Código (RNF08)
+          </span>
+<h2 class="text-2xl sm:text-3xl font-extrabold text-[#1D1D1F] mt-1.5">
+            Arquivos Separados Prontos para o VS Code (`index.html`, `styles.css`, `app.js`)
+          </h2>
+<p class="text-xs text-[#6E6E73] mt-1">
+            Todos os 3 arquivos abaixo já estão atualizados com este novo Design System Apple HIG + Notion arredondado:
+          </p>
+</div>
+</div>
+<div class="bento-card overflow-hidden">
+<div class="px-5 py-3 bg-[#F5F5F7] border-b border-black/5 flex flex-wrap items-center justify-between gap-3">
+<div class="segmented-control">
+<button class="segmented-item active" id="codeTab-html" onclick="switchCodeFile('html')">
+<i class="ph-fill ph-file-html text-[#E34F26]"></i> index.html
+            </button>
+<button class="segmented-item" id="codeTab-css" onclick="switchCodeFile('css')">
+<i class="ph-fill ph-file-css text-[#1572B6]"></i> styles.css
+            </button>
+<button class="segmented-item" id="codeTab-js" onclick="switchCodeFile('js')">
+<i class="ph-fill ph-file-js text-[#F7DF1E]"></i> app.js
+            </button>
+</div>
+<button class="btn-tactile px-4 py-2 bg-[#0066CC] hover:bg-[#0052A3] text-white text-xs shadow-2xs" onclick="copyCurrentCodeBlock()">
+<i class="ph-bold ph-copy mr-1.5"></i> Copiar Arquivo Selecionado
+          </button>
+</div>
+<pre class="p-6 bg-[#1D1D1F] text-[#F5F5F7] font-mono-tech text-xs overflow-x-auto max-h-[540px] leading-relaxed" id="codeDisplayArea"></pre>
+</div>
+</section>
+</main>
+<!-- ==========================================================================
+       NOTIFICAÇÃO FLUTUANTE ESTILO APPLE PILL TOAST (SEM ALERT NATIVO)
+       ========================================================================== -->
+<div class="fixed bottom-6 right-6 z-50 hidden max-w-md bg-[#1D1D1F]/95 backdrop-blur-xl text-white rounded-2xl p-4 shadow-2xl border border-white/15 transition-all" id="appleToast">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start space-x-3">
+<div class="w-8 h-8 rounded-xl bg-[#0066CC] flex items-center justify-center shrink-0 mt-0.5">
+<i class="ph-fill ph-bell-ringing text-white text-base"></i>
+</div>
+<div>
+<div class="text-xs font-bold uppercase tracking-wider text-[#60A5FA]" id="toastTitle">Evento do Sistema</div>
+<div class="text-sm font-medium text-white/95 mt-0.5" id="toastMessage">Ação registrada com sucesso.</div>
+</div>
+</div>
+<button class="text-white/60 hover:text-white text-xs px-1.5 py-0.5 rounded-lg" onclick="hideToast()">✕</button>
+</div>
+</div>
+<!-- ==========================================================================
+       RODAPÉ MINIMALISTA
+       ========================================================================== -->
+<footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 mt-8 border-t border-black/5 text-xs text-[#6E6E73] flex flex-col sm:flex-row items-center justify-between gap-2">
+<div>Instituto Federal de Brasília (IFB) • Curso de Tecnologia em Sistemas para Internet</div>
+<div>Protótipo de Avaliação Técnica (WCAG 2.2 AAA &amp; LGPD) • Abner Oliveira Mota (2026)</div>
+</footer>
+<!-- ==========================================================================
+       LÓGICA COMPLETA DA APLICAÇÃO (JAVASCRIPT)
+       ========================================================================== -->
+<script src="app.js"></script>
+</body>
+</html>
+```
+
+### Principais melhorias visuais e de experiência aplicadas:
+* **Geometria Fluida Apple HIG + Notion:** Substituímos os cantos retos de `0px` por cartões Bento suaves (`22px`), botões táteis arredondados (`14px`) com micro-interação ao clique e *badges* em formato de pílula (`rounded-full`).
+* **Cabeçalho e Barra de Simulação com *Frosted Glass*:** Uso de `backdrop-filter: blur(20px)` e controle segmentado estilo iOS/macOS para alternar entre as 4 visões do TCC.
+* **Ilustração 3D-Styled da Caixa e Comprimido + Onda Sonora no Áudio:** Na visão do idoso, a caixa do medicamento agora tem relevo suave, representação do comprimido e um indicador animado de ondas sonoras enquanto a **Web Speech API** lê a *Bula Traduzida* em português.

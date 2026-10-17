@@ -1,0 +1,21 @@
+MEDASSIST — VERSÃO COM INTERFACE ACOLHEDORA E GAMIFICAÇÃO
+
+Arquivos:
+- index.html
+- styles.css
+- app.js
+
+Como testar:
+1. Extraia todos os arquivos para a mesma pasta.
+2. Abra index.html em um navegador moderno.
+3. Confirme uma dose usando o botão principal para atualizar pontos e progresso.
+4. Confirmações e pontos ficam salvos no armazenamento local deste navegador.
+
+Gamificação:
+- +10 pontos por medicamento confirmado por dia (não soma pontos duplicados para o mesmo medicamento no mesmo dia).
+- Barra de progresso diária.
+- Sequência de dias completos e três conquistas.
+- Mensagens positivas sem punição por atrasos ou esquecimentos.
+
+Importante para o TCC:
+Este é um protótipo de interface. O progresso é salvo localmente no navegador, não sincroniza entre dispositivos e não comprova que a pessoa realmente tomou o medicamento — registra a confirmação feita no app. Os dados e orientações medicamentosas de demonstração devem ser validados com profissional de saúde. Não use o bloqueio de dose como orientação clínica real.

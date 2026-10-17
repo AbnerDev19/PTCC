@@ -1,0 +1,253 @@
+
+    /* ==========================================================================
+       DESIGN SYSTEM: APPLE HIG + NOTION WARM BENTO AESTHETIC
+       ========================================================================== */
+    :root {
+      --bg-canvas: #F5F5F7;
+      --bg-warm: #FBFBFA;
+      --surface-card: #FFFFFF;
+      --text-ink: #1D1D1F;
+      --text-slate: #6E6E73;
+      --border-hairline: rgba(0, 0, 0, 0.07);
+      --apple-blue: #0066CC;
+      --emerald-safe: #15803D;
+      --emerald-soft: #E8F8F0;
+      --amber-warn: #D97706;
+      --amber-soft: #FEF3C7;
+      --coral-alert: #DC2626;
+      --coral-soft: #FEE2E2;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-canvas);
+      background-image: radial-gradient(circle at 50% 0%, #FFFFFF 0%, #F5F5F7 75%);
+      color: var(--text-ink);
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, .font-display {
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+    }
+
+    .font-mono-tech {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Superfícies Bento com Bordas Suaves e Sombras Difusas */
+    .bento-card {
+      background: var(--surface-card);
+      border-radius: 22px;
+      border: 1px solid var(--border-hairline);
+      box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .bento-card-interactive:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.07), 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .notion-soft-callout {
+      background: var(--bg-warm);
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    /* Efeito Frosted Glass estilo macOS / iOS */
+    .frosted-nav {
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    }
+
+    .frosted-pill-bar {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Botões Táteis Acessíveis */
+    .btn-tactile {
+      border-radius: 14px;
+      font-weight: 700;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-tactile:active:not(:disabled) {
+      transform: scale(0.985);
+    }
+
+    .btn-tactile:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* Segmented Control (Pílula estilo Apple) */
+    .segmented-control {
+      background: rgba(118, 118, 128, 0.12);
+      padding: 4px;
+      border-radius: 14px;
+      display: inline-flex;
+    }
+
+    .segmented-item {
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-slate);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .segmented-item.active {
+      background: #FFFFFF;
+      color: var(--text-ink);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Animação de Onda Sonora (TTS Ativo) */
+    @keyframes sound-wave {
+      0%, 100% { height: 6px; }
+      50% { height: 20px; }
+    }
+    .wave-bar {
+      width: 3px;
+      background-color: currentColor;
+      border-radius: 999px;
+      display: inline-block;
+      animation: sound-wave 0.8s ease-in-out infinite;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+
+    /* Animação Suave no Card de Alarme Ativo */
+    @keyframes gentle-glow {
+      0%, 100% { box-shadow: 0 8px 30px -4px rgba(0, 102, 204, 0.08), 0 0 0 1px rgba(0, 102, 204, 0.18); }
+      50% { box-shadow: 0 12px 36px -4px rgba(0, 102, 204, 0.16), 0 0 0 2px rgba(0, 102, 204, 0.35); }
+    }
+    .active-dose-glow {
+      animation: gentle-glow 3s infinite ease-in-out;
+    }
+
+    /* Barra de Rolagem Suave */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  
+
+/* Interface acolhedora para pessoas idosas + progresso gamificado */
+.elder-game-card { border: 2px solid #D7E8FA; background: linear-gradient(135deg,#FFFFFF 0%,#F3F8FF 100%); }
+.game-avatar { width:68px;height:68px;flex:0 0 68px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:#DCEBFF;color:#064E9B;font-size:36px; }
+.game-points { min-width:155px;padding:15px 20px;border-radius:18px;background:#123D70;color:#fff;display:flex;flex-direction:column;align-items:center; }
+.game-points strong { font-size:38px;line-height:1.2;font-weight:800; }
+.game-progress-box { background:#fff;border:1px solid #DCE5EF;border-radius:18px;padding:18px; }
+.game-progress-track { width:100%;height:18px;border-radius:999px;background:#E3EAF2;overflow:hidden; }
+.game-progress-track span { display:block;width:0;height:100%;border-radius:999px;background:#147D4B;transition:width .45s ease; }
+.game-streak { display:inline-flex;align-items:center;gap:7px;background:#FFF1D6;color:#713B00;padding:7px 11px;border-radius:999px;font-weight:800;font-size:16px; }
+.game-streak i { font-size:22px; }
+.game-achievements { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px; }
+.achievement { display:flex;align-items:center;gap:12px;padding:14px;border:2px solid #C9E7D6;border-radius:16px;background:#F0FBF4;min-height:88px; }
+.achievement.locked { background:#F4F5F7;border-color:#D9DDE3;color:#555B65; }
+.achievement-icon { width:44px;height:44px;flex:0 0 44px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#D3F2DF;color:#075C32;font-size:25px; }
+.achievement.locked .achievement-icon { background:#E3E5E8;color:#626873; }
+.achievement strong,.achievement small { display:block; }
+.achievement strong { font-size:15px;font-weight:800;line-height:1.25; }
+.achievement small { font-size:13px;line-height:1.35;margin-top:4px; }
+@media(max-width:700px) {
+  .game-achievements { grid-template-columns:1fr; }
+  .achievement { min-height:76px; }
+  .game-avatar { width:56px;height:56px;flex-basis:56px;font-size:30px; }
+  .game-points { align-items:flex-start; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .game-progress-track span { transition:none; }
+}
+
+/* MedAssist — identidade visual baseada na referência enviada (azul suave + teal) */
+:root {
+  --med-bg: #eaf5f8;
+  --med-surface: #ffffff;
+  --med-panel: #dcecf2;
+  --med-teal: #719eaa;
+  --med-teal-dark: #527f8b;
+  --med-ink: #17252b;
+  --med-muted: #5e7076;
+}
+html { background: var(--med-bg); }
+body {
+  color: var(--med-ink) !important;
+  background: radial-gradient(ellipse at 15% 0%, #d8edf5 0%, transparent 42%), var(--med-bg) !important;
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif !important;
+}
+.frosted-nav {
+  background: rgba(246, 251, 252, .94) !important;
+  border-bottom: 1px solid rgba(113, 158, 170, .18) !important;
+  box-shadow: 0 5px 24px rgba(66, 108, 120, .06) !important;
+}
+.frosted-pill-bar { background: rgba(255,255,255,.88) !important; border: 1px solid #d7e8ed !important; box-shadow: 0 8px 28px rgba(66,108,120,.06) !important; }
+.bento-card, .game-progress-box {
+  background: var(--med-surface) !important;
+  border: 1px solid #d6e7ec !important;
+  border-radius: 26px !important;
+  box-shadow: 0 8px 24px rgba(64, 105, 117, .07) !important;
+}
+.elder-game-card {
+  background: var(--med-panel) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 28px !important;
+}
+.game-avatar { background: #fff !important; color: var(--med-teal-dark) !important; border-radius: 50% !important; }
+.game-points { background: var(--med-teal) !important; border-radius: 22px !important; }
+.game-progress-box { background: rgba(255,255,255,.78) !important; box-shadow: none !important; }
+.game-progress-track { background: #c6dfe7 !important; }
+.game-progress-track span { background: var(--med-teal-dark) !important; }
+.game-streak { background: #fff !important; color: #385f69 !important; }
+.achievement { background: #fff !important; border-color: #c7dfe6 !important; border-radius: 20px !important; }
+.achievement.locked { background: #edf5f7 !important; border-color: #d6e5e9 !important; color: #53666c !important; }
+.achievement-icon { background: #dcecf2 !important; color: var(--med-teal-dark) !important; border-radius: 50% !important; }
+.achievement.locked .achievement-icon { background: #dce9ed !important; color: #718990 !important; }
+.segmented-control { background: #dcecf2 !important; border-radius: 18px !important; }
+.segmented-item { border-radius: 14px !important; }
+.segmented-item.active { background: #fff !important; color: #365e68 !important; }
+button { transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+button:focus-visible { outline: 3px solid #477e8b !important; outline-offset: 3px; }
+#view-elderly h1 { letter-spacing: -.035em !important; }
+#view-elderly .text-\[\#0066CC\], .text-\[\#0066CC\] { color: var(--med-teal-dark) !important; }
+#view-elderly .bg-\[\#0066CC\], .bg-\[\#0066CC\] { background-color: var(--med-teal) !important; }
+#view-elderly .bg-\[\#0066CC\]\/10 { background-color: #dcecf2 !important; }
+@media(max-width: 700px) {
+  main { padding-top: 18px !important; }
+  .bento-card { border-radius: 22px !important; }
+  .elder-game-card { padding: 20px !important; }
+  .game-achievements { grid-template-columns: 1fr !important; }
+  .game-points { width: 100%; align-items: center !important; }
+  .segmented-control { max-width: 100%; }
+}
