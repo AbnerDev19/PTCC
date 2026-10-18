@@ -47,16 +47,16 @@
 <nav aria-label="Modos do Protótipo" class="segmented-control overflow-x-auto max-w-full">
 <button class="segmented-item active" id="tab-elderly" onclick="switchTab('elderly')">
 <i class="ph-fill ph-user-circle text-base text-[#0066CC]"></i>
-<span>1. Interface do Idoso</span>
+<span>Idoso</span>
 </button>
 <button class="segmented-item" id="tab-family" onclick="switchTab('family')">
 <i class="ph-fill ph-users-three text-base"></i>
-<span>2. Painel Familiar</span>
+<span>Família</span>
 <span class="hidden font-mono-tech text-[10px] bg-[#DC2626] text-white px-1.5 py-0.2 rounded-full font-bold" id="familyAlertBadge">!</span>
 </button>
 <button class="segmented-item" id="tab-lab" onclick="switchTab('lab')">
 <i class="ph-fill ph-chart-polar text-base"></i>
-<span>3. Lab de Avaliação</span>
+<span>Laboratório (TCC)</span>
 </button>
 </nav>
 <!-- Indicadores de Status Desktop -->
@@ -75,8 +75,9 @@
 <!-- ==========================================================================
        BARRA FLUTUANTE DE SIMULAÇÃO PARA A BANCA (DOCK DE TESTES RÁPIDOS)
        ========================================================================== -->
-<div class="max-w-7xl w-full mx-auto px-4 sm:px-6 pt-4">
-<div class="frosted-pill-bar rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+<details class="max-w-7xl w-full mx-auto px-4 sm:px-6 pt-3 demo-tools">
+<summary><i class="ph-bold ph-sliders-horizontal"></i> Ferramentas de demonstração (para a banca)</summary>
+<div class="frosted-pill-bar mt-2 rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
 <div class="flex items-center space-x-2">
 <span class="bg-[#1D1D1F] text-white font-semibold px-2.5 py-1 rounded-full text-[11px] flex items-center gap-1.5">
 <i class="ph-fill ph-sliders-horizontal"></i> Simulador da Banca
@@ -84,9 +85,7 @@
 <span class="text-[#6E6E73] hidden md:inline">Alterne medicamentos ou simule condições críticas em tempo real:</span>
 </div>
 <div class="flex flex-wrap items-center gap-1.5">
-<!-- Seletor de Medicamentos (gerado por JS) -->
-<div class="flex flex-wrap gap-1.5" id="medSwitcher"></div>
-<span class="text-black/15 mx-1 hidden sm:inline">|</span>
+
 <!-- Simulador de Polifarmácia -->
 <button class="px-3 py-1.5 rounded-xl font-semibold text-xs bg-white border border-black/10 text-[#1D1D1F] hover:bg-[#FEF3C7]/60 flex items-center gap-1.5 transition" id="btnPolyLock" onclick="togglePolypharmacyLock()">
 <i class="ph-fill ph-warning-circle text-[#D97706] text-sm"></i>
@@ -103,7 +102,7 @@
         </button>
 </div>
 </div>
-</div>
+</details>
 <!-- ==========================================================================
        CONTEÚDO PRINCIPAL (4 VISÕES MODULARES EM BENTO GRID)
        ========================================================================== -->
@@ -112,107 +111,13 @@
          VISÃO 1: INTERFACE DO IDOSO (ACESSIBILIDADE + EDUCAÇÃO EM SAÚDE)
          ======================================================================== -->
 <section class="space-y-6" id="view-elderly">
-<!-- Topo Saudação + Selo de Acessibilidade -->
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
 <div>
-<div class="flex flex-wrap items-center gap-2">
-<span class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-[#E8F8F0] text-[#15803D]">
-<i class="ph-fill ph-check-circle"></i> Foco em acessibilidade: alto contraste e botões grandes
-            </span>
-<span class="text-xs font-medium text-[#6E6E73] bg-white/80 px-3 py-1 rounded-full border border-black/5">
-              Paciente: Sr. José Oliveira (74 anos)
-            </span>
-</div>
-<h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[#1D1D1F] mt-2">
-            Bom dia, Sr. José. Hora do seu cuidado.
-          </h1>
-</div>
-<!-- Card Compacto de Voz Assistiva -->
-<div class="bento-card px-4 py-3 flex items-center space-x-3 self-start md:self-auto">
-<div class="w-10 h-10 rounded-xl bg-[#0066CC]/10 text-[#0066CC] flex items-center justify-center">
-<i class="ph-fill ph-speaker-high text-xl"></i>
+<span class="inline-flex text-sm font-medium text-[#4A5559] bg-white/80 px-3 py-1 rounded-full border border-black/5">Paciente: Sr. José Oliveira (74 anos)</span>
+<h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mt-2">Bom dia, Sr. José. Hora do seu cuidado.</h1>
 </div>
 <div>
-<div class="text-xs font-bold text-[#1D1D1F]">Leitura por Voz Ativa</div>
-<div class="text-[11px] text-[#6E6E73]">Toque no botão de áudio para ouvir</div>
-</div>
-</div>
-</div>
-<!-- PAINEL DE PROGRESSO E CONQUISTAS: GAMIFICAÇÃO ACOLHEDORA -->
-<div class="bento-card elder-game-card p-5 sm:p-7" id="elderGamePanel" aria-live="polite">
-  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-    <div class="flex items-center gap-4">
-      <div class="game-avatar" aria-hidden="true"><i class="ph-fill ph-sparkle"></i></div>
-      <div>
-        <p class="text-sm font-bold text-[#0066CC] uppercase tracking-wide">Minha jornada de cuidado</p>
-        <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Cada cuidado conta!</h2>
-        <p class="text-lg text-[#41414A] mt-1" id="gameEncouragement">Vamos cuidar de você, um horário de cada vez.</p>
-      </div>
-    </div>
-    <div class="game-points">
-      <span class="text-sm font-bold">MEUS PONTOS</span>
-      <strong id="gamePoints">0</strong>
-      <span class="text-sm">pontos de cuidado</span>
-    </div>
-  </div>
-  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
-    <div class="game-progress-box">
-      <div class="flex items-center justify-between gap-3">
-        <h3 class="text-lg font-extrabold">Progresso de hoje</h3>
-        <span class="text-base font-bold" id="gameTodayCount">0 de 3 cuidados</span>
-      </div>
-      <div class="game-progress-track mt-3" role="progressbar" aria-label="Cuidados confirmados hoje" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" id="gameProgressBar"><span id="gameProgressFill"></span></div>
-      <p class="text-base mt-3" id="gameTodayMessage">Quando confirmar um cuidado, seu progresso será atualizado aqui.</p>
-    </div>
-    <div class="game-progress-box">
-      <div class="flex items-center justify-between gap-3">
-        <h3 class="text-lg font-extrabold">Minha sequência</h3>
-        <span class="game-streak"><i class="ph-fill ph-fire"></i> <span id="gameStreak">0 dias</span></span>
-      </div>
-      <p class="text-base mt-3">Sua sequência cresce com constância. Se algum dia não sair como esperado, tudo bem: você pode recomeçar.</p>
-    </div>
-  </div>
-  <div class="mt-5">
-    <h3 class="text-lg font-extrabold mb-3">Conquistas especiais</h3>
-    <div class="game-achievements" id="gameAchievements">
-      <div class="achievement locked" id="achievement-first"><span class="achievement-icon"><i class="ph-fill ph-hand-heart"></i></span><span><strong>Primeiro cuidado</strong><small>Confirme seu primeiro horário</small></span></div>
-      <div class="achievement locked" id="achievement-day"><span class="achievement-icon"><i class="ph-fill ph-sun"></i></span><span><strong>Dia completo</strong><small>Confirme os 3 horários do dia</small></span></div>
-      <div class="achievement locked" id="achievement-streak"><span class="achievement-icon"><i class="ph-fill ph-medal"></i></span><span><strong>Constância de ouro</strong><small>Complete 7 dias de cuidado</small></span></div>
-    </div>
-  </div>
-  <p class="text-sm text-[#55555D] mt-4">Os pontos são um incentivo, não uma avaliação. Não há punição por atrasos ou esquecimentos. Em caso de dúvida sobre uma dose, siga a orientação do profissional de saúde.</p>
-</div>
-
-<!-- BENTO CARD 1: ESCUDO DE PROTEÇÃO ATIVO (EDUCAÇÃO SOBRE PONTUALIDADE) -->
-<div class="bento-card p-5 sm:p-6" id="protectionShieldBlock">
-<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-<div class="flex items-start sm:items-center space-x-4">
-<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#E8F8F0] text-[#15803D] flex items-center justify-center shrink-0 shadow-xs" id="shieldIconBox">
-<i class="ph-fill ph-shield-check text-3xl sm:text-4xl" id="shieldIcon"></i>
-</div>
-<div class="space-y-1">
-<div class="flex flex-wrap items-center gap-2">
-<span class="text-xs font-bold px-3 py-1 rounded-full bg-[#E8F8F0] text-[#15803D]" id="shieldStatusBadge">
-                  Escudo de Proteção Ativo • 100%
-                </span>
-<span class="text-xs font-semibold text-[#6E6E73]">
-                  <span id="shieldStreakText">0 dias seguidos com todos os cuidados</span>
-                </span>
-</div>
-<p class="text-base sm:text-lg font-semibold text-[#1D1D1F] leading-snug pt-0.5" id="shieldEduText">
-                Tomar o remédio sempre na mesma hora mantém o efeito protetor estável no seu sangue o dia inteiro.
-              </p>
-</div>
-</div>
-<!-- Pílulas de Constância da Semana -->
-<div class="flex items-center gap-2 shrink-0 bg-[#F5F5F7] p-2 rounded-2xl border border-black/5">
-<div id="weekStrip" class="contents"></div>
-<div class="w-14 py-2 rounded-xl bg-[#0066CC] text-white text-center shadow-xs" id="todayStamp">
-<div class="text-[10px] font-bold uppercase opacity-90">HOJE</div>
-<div class="font-mono-tech text-xs font-bold mt-0.5" id="todayStampIcon">08:00</div>
-</div>
-</div>
-</div>
+<h2 class="text-lg font-extrabold mb-2">Seus remédios de hoje</h2>
+<div class="flex flex-wrap gap-2" id="medSwitcher"></div>
 </div>
 <!-- BENTO CARD 2: CARTÃO PRINCIPAL DO MEDICAMENTO (BULA TRADUZIDA + VOZ + CONFIRMAÇÃO) -->
 <div class="bento-card active-dose-glow overflow-hidden" id="mainDoseContainer">
@@ -288,7 +193,7 @@
 <i class="ph-fill ph-book-open-text text-base"></i>
                     Para que serve e como tomar (Bula Traduzida)
                   </span>
-<span class="font-mono-tech text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#E8F8F0] text-[#15803D]" id="elderlyFleschBadge">
+<span class="hidden" id="elderlyFleschBadge">
                     Leitura Flesch: 84 (Muito Fácil)
                   </span>
 </div>
@@ -348,7 +253,7 @@
                 Muito bem! Levante-se devagar da cama ou do sofá nas próximas horas para evitar tontura. Mesmo que a pressão esteja boa amanhã, continue tomando no horário.
               </p>
 </div>
-<div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-[#15803D] font-medium">
+<div class="hidden">
 <span>✓ Proteção contra toque duplo ativada (evita baixa duplicada no estoque).</span>
 <span class="font-mono-tech font-bold">Índice Flesch: 82 (Muito Fácil)</span>
 </div>
@@ -375,6 +280,85 @@
 </div>
 </div>
 </div>
+
+<h2 class="text-xl font-extrabold pt-2">Meu progresso</h2>
+<!-- PAINEL DE PROGRESSO E CONQUISTAS: GAMIFICAÇÃO ACOLHEDORA -->
+<div class="bento-card elder-game-card p-5 sm:p-7" id="elderGamePanel" aria-live="polite">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+    <div class="flex items-center gap-4">
+      <div class="game-avatar" aria-hidden="true"><i class="ph-fill ph-sparkle"></i></div>
+      <div>
+        <p class="text-sm font-bold text-[#0066CC] uppercase tracking-wide">Minha jornada de cuidado</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold mt-1">Cada cuidado conta!</h2>
+        <p class="text-lg text-[#41414A] mt-1" id="gameEncouragement">Vamos cuidar de você, um horário de cada vez.</p>
+      </div>
+    </div>
+    <div class="game-points">
+      <span class="text-sm font-bold">MEUS PONTOS</span>
+      <strong id="gamePoints">0</strong>
+      <span class="text-sm">pontos de cuidado</span>
+    </div>
+  </div>
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="game-progress-box">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="text-lg font-extrabold">Progresso de hoje</h3>
+        <span class="text-base font-bold" id="gameTodayCount">0 de 3 cuidados</span>
+      </div>
+      <div class="game-progress-track mt-3" role="progressbar" aria-label="Cuidados confirmados hoje" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" id="gameProgressBar"><span id="gameProgressFill"></span></div>
+      <p class="text-base mt-3" id="gameTodayMessage">Quando confirmar um cuidado, seu progresso será atualizado aqui.</p>
+    </div>
+    <div class="game-progress-box">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="text-lg font-extrabold">Minha sequência</h3>
+        <span class="game-streak"><i class="ph-fill ph-fire"></i> <span id="gameStreak">0 dias</span></span>
+      </div>
+      <p class="text-base mt-3">Sua sequência cresce com constância. Se algum dia não sair como esperado, tudo bem: você pode recomeçar.</p>
+    </div>
+  </div>
+  <details class="fold mt-5">
+    <summary>Ver minhas conquistas</summary>
+    <div class="mt-3">
+    <div class="game-achievements" id="gameAchievements">
+      <div class="achievement locked" id="achievement-first"><span class="achievement-icon"><i class="ph-fill ph-hand-heart"></i></span><span><strong>Primeiro cuidado</strong><small>Confirme seu primeiro horário</small></span></div>
+      <div class="achievement locked" id="achievement-day"><span class="achievement-icon"><i class="ph-fill ph-sun"></i></span><span><strong>Dia completo</strong><small>Confirme os 3 horários do dia</small></span></div>
+      <div class="achievement locked" id="achievement-streak"><span class="achievement-icon"><i class="ph-fill ph-medal"></i></span><span><strong>Constância de ouro</strong><small>Complete 7 dias de cuidado</small></span></div>
+    </div>
+  </div></details>
+  <p class="text-sm text-[#55555D] mt-4">Os pontos são um incentivo, não uma avaliação. Não há punição por atrasos ou esquecimentos. Em caso de dúvida sobre uma dose, siga a orientação do profissional de saúde.</p>
+</div>
+
+<!-- BENTO CARD 1: ESCUDO DE PROTEÇÃO ATIVO (EDUCAÇÃO SOBRE PONTUALIDADE) -->
+<div class="bento-card p-5 sm:p-6" id="protectionShieldBlock">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+<div class="flex items-start sm:items-center space-x-4">
+<div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#E8F8F0] text-[#15803D] flex items-center justify-center shrink-0 shadow-xs" id="shieldIconBox">
+<i class="ph-fill ph-shield-check text-3xl sm:text-4xl" id="shieldIcon"></i>
+</div>
+<div class="space-y-1">
+<div class="flex flex-wrap items-center gap-2">
+<span class="text-xs font-bold px-3 py-1 rounded-full bg-[#E8F8F0] text-[#15803D]" id="shieldStatusBadge">
+                  Escudo de Proteção Ativo • 100%
+                </span>
+<span class="text-xs font-semibold text-[#6E6E73]">
+                  <span id="shieldStreakText">0 dias seguidos com todos os cuidados</span>
+                </span>
+</div>
+<p class="text-base sm:text-lg font-semibold text-[#1D1D1F] leading-snug pt-0.5" id="shieldEduText">
+                Tomar o remédio sempre na mesma hora mantém o efeito protetor estável no seu sangue o dia inteiro.
+              </p>
+</div>
+</div>
+<!-- Pílulas de Constância da Semana -->
+<div class="flex items-center gap-2 shrink-0 bg-[#F5F5F7] p-2 rounded-2xl border border-black/5">
+<div id="weekStrip" class="contents"></div>
+<div class="w-14 py-2 rounded-xl bg-[#0066CC] text-white text-center shadow-xs" id="todayStamp">
+<div class="text-[10px] font-bold uppercase opacity-90">HOJE</div>
+<div class="font-mono-tech text-xs font-bold mt-0.5" id="todayStampIcon">08:00</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <!-- ========================================================================
          VISÃO 2: PAINEL DO FAMILIAR & CUIDADO (BENTO DASHBOARD)
@@ -385,16 +369,16 @@
 <div>
 <div class="flex items-center space-x-2">
 <span class="text-xs font-bold px-3 py-1 rounded-full bg-[#0066CC]/10 text-[#0066CC]">
-              Acompanhamento Familiar Remoto (RF01 / RF06)
+              Acompanhamento familiar
             </span>
 <span class="text-xs text-[#6E6E73]">Cuidadora vinculada: Mariana Mota (Filha)</span>
 </div>
 <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1D1D1F] mt-1.5">
-            Painel de Adesão, Estoque e Escalonamento em Nuvem
+            Como está o Sr. José hoje
           </h2>
 </div>
 <button class="btn-tactile px-4 py-2.5 bg-[#DC2626] hover:bg-[#B91C1C] text-white text-xs shadow-xs self-start md:self-auto" onclick="triggerManualEscalationTest()">
-<i class="ph-bold ph-paper-plane-tilt mr-1.5 text-sm"></i> Simular Alerta Escalado no Telegram (RF05)
+<i class="ph-bold ph-paper-plane-tilt mr-1.5 text-sm"></i> Testar alerta à família
         </button>
 </div>
 <!-- BENTO GRID SUPERIOR: TELEMETRIA WATCHDOG + CRONOGRAMA + CHAT TELEGRAM -->
@@ -496,8 +480,9 @@
 </div>
 </div>
 </div>
-<!-- BENTO CARD INFERIOR: CADASTRO DE MEDICAMENTO + CALCULADORA FLESCH EM TEMPO REAL -->
-<div class="bento-card p-6 sm:p-7 space-y-5">
+<details class="fold bento-card p-0">
+<summary class="px-6 py-4 text-base font-extrabold"><i class="ph-bold ph-plus-circle"></i> Cadastrar novo medicamento</summary>
+<div class=" p-6 sm:p-7 space-y-5">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/5 pb-4">
 <div>
 <span class="text-xs font-bold uppercase tracking-wider text-[#0066CC]">
@@ -563,6 +548,7 @@
 </div>
 </form>
 </div>
+</details>
 </section>
 <!-- ========================================================================
          VISÃO 3: LABORATÓRIO DE AVALIAÇÃO TÉCNICA (MÉTRICAS DO TCC SEM CEP)

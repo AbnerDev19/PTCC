@@ -263,3 +263,24 @@ a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visib
   .active-dose-glow, .wave-bar { animation: none !important; }
   .bento-card, .btn-tactile, button { transition: none !important; }
 }
+
+/* ===== Organização e usabilidade (revisão de navegação) ===== */
+/* Abas principais maiores e fáceis de tocar */
+.segmented-item { font-size: 15px !important; padding: 11px 18px !important; min-height: 46px; }
+.segmented-item.active { box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+
+/* Blocos recolhíveis (detalhes secundários ficam escondidos até o usuário querer) */
+details.fold { border-radius: 18px; }
+details.fold > summary, details.demo-tools > summary {
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px;
+  min-height: 48px; font-weight: 800; color: var(--med-teal-dark);
+}
+details.fold > summary::-webkit-details-marker, details.demo-tools > summary::-webkit-details-marker { display: none; }
+details.fold > summary::after { content: "▾"; margin-left: auto; transition: transform .2s; }
+details.fold[open] > summary::after { transform: rotate(180deg); }
+details.demo-tools > summary { font-size: 13px; color: var(--med-muted); min-height: 36px; font-weight: 700; }
+
+/* Seletor de remédios da tela do idoso: botões grandes */
+#medSwitcher button { font-size: 17px !important; font-weight: 700 !important; padding: 12px 20px !important; min-height: 52px; border-radius: 16px !important; }
+#medSwitcher button[aria-pressed="false"] { background: #fff !important; border: 2px solid #c7dfe6; color: var(--med-ink) !important; }
+#medSwitcher button[aria-pressed="true"] { background: var(--med-teal-dark) !important; color: #fff !important; }

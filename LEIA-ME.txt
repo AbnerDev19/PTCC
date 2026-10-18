@@ -47,3 +47,15 @@ Acessibilidade:
   avisos (toast) anunciados por leitores de tela.
 
 Requer internet para carregar Tailwind, fontes e ícones (CDN).
+
+
+---------------------------------------------------------------
+REORGANIZAÇÃO DA NAVEGAÇÃO (v3.1)
+---------------------------------------------------------------
+- Abas renomeadas: Idoso | Família | Laboratório (TCC).
+- Tela do idoso: o cartão do remédio e o botão "Já tomei" agora vêm primeiro; progresso e conquistas ficam abaixo.
+- Seletor de horários ("Seus remédios de hoje") saiu da barra de testes e foi para a tela do idoso, com botões grandes.
+- Simulador da banca recolhido em "Ferramentas de demonstração".
+- Painel da família: cadastro de medicamento recolhido; títulos em linguagem simples.
+- Jargão técnico (Flesch, toque duplo) removido da tela do idoso; segue disponível no cadastro da família.
+- app.js não foi alterado.
