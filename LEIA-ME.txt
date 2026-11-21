@@ -1,61 +1,41 @@
-MEDASSIST — VERSÃO COM INTERFACE ACOLHEDORA E GAMIFICAÇÃO
+MEDASSIST — PROTÓTIPO WEB DO PTCC
 
-Arquivos:
-- index.html
-- styles.css
-- app.js
+Abra index.html em um navegador moderno. Para usar uma origem estável para o
+armazenamento, execute "python -m http.server 8000" na pasta e abra
+http://localhost:8000. Fontes, ícones e utilitários visuais usam CDN.
 
-Como testar:
-1. Extraia todos os arquivos para a mesma pasta.
-2. Abra index.html em um navegador moderno.
-3. Confirme uma dose usando o botão principal para atualizar pontos e progresso.
-4. Confirmações e pontos ficam salvos no armazenamento local deste navegador.
+Roteiro para a apresentação
 
-Gamificação:
-- +10 pontos por medicamento confirmado por dia (não soma pontos duplicados para o mesmo medicamento no mesmo dia).
-- Barra de progresso diária.
-- Sequência de dias completos e três conquistas.
-- Mensagens positivas sem punição por atrasos ou esquecimentos.
+1. Na aba Idoso, confira os horários e abra Simular lembrete. O diálogo em
+   tela cheia mostra medicamento, dose, orientação, fonte e leitura em voz alta.
+2. Registre a confirmação. A mensagem educativa e o progresso são atualizados.
+   A chave medicamento/data/horário evita duplicidade.
+3. Saia da demonstração. Na aba Idoso, cadastre medicamentos fictícios com um
+   ou mais horários, fonte, finalidade, modo de uso, cuidados e foto opcional.
+4. Veja o bloqueio na aba Família. Na aba Idoso, autorize a consulta e volte
+   à aba Família para ver o histórico. Revogue a autorização e confira o bloqueio.
+5. No Laboratório, compare os quatro modelos de histórico. Testar no lembrete
+   abre o fluxo com os dados da amostra. Sair da demonstração volta ao histórico
+   local, que não é alterado pelo cenário.
 
-Importante para o TCC:
-Este é um protótipo de interface. O progresso é salvo localmente no navegador, não sincroniza entre dispositivos e não comprova que a pessoa realmente tomou o medicamento — registra a confirmação feita no app. Os dados e orientações medicamentosas de demonstração devem ser validados com profissional de saúde. Não use o bloqueio de dose como orientação clínica real.
+Regras demonstrativas
 
+- Janela de 30 dias, incluindo hoje. Uma confirmação até 15 minutos após o
+  horário conta como pontual. Ausência de registro entra após duas horas.
+- A mensagem inicial aparece com menos de cinco horários classificados. A
+  seguir, a ordem de avaliação é 30% sem confirmação, 30% com atraso e 80%
+  no horário. Se nenhum limiar se aplicar, aparece uma mensagem geral.
+- A regularidade conta dias consecutivos com todos os horários confirmados
+  no prazo. O dia atual em andamento pode conservar a sequência de ontem.
+- Os registros da versão anterior sem hora ficam disponíveis no histórico
+  durante a janela de consulta e não entram no cálculo de pontualidade.
 
----------------------------------------------------------------
-REVISÃO — O QUE FOI MELHORADO
----------------------------------------------------------------
-Correções:
-- Removido texto em Markdown ("```" e "Principais melhorias...") que aparecia depois de </html>.
-- Ícones corrigidos (ph-chart-polar, ph-seal-check): antes não apareciam.
-- Segurança: nomes/posologia/bula digitados no cadastro agora são escapados (antes permitiam injeção de HTML).
-- Medicamentos cadastrados agora aparecem no seletor do simulador e atualizam o progresso do dia.
-- Barra de progresso (aria-valuemax) acompanha o número real de medicamentos.
-- Trava de polifarmácia usa os horários reais (antes eram "08:00" e "12:00" fixos).
-- Leitura por voz é interrompida ao trocar de aba ou de medicamento.
+Limites da demonstração
 
-Honestidade científica (importante para a banca):
-- Removida a aba "Código Separado": mostrava código diferente do real.
-- Removida a alegação "WCAG 2.2 AAA (contraste > 14:1)", que não foi medida. Meça com uma ferramenta
-  (ex.: WAVE, axe DevTools, Lighthouse) antes de afirmar conformidade.
-- Sequência e semana ("SEG-QUI") agora vêm dos dados reais; antes eram valores fixos de exemplo.
-- Laboratório: KPIs (entrega, latência, desvio, % < 30 s) agora são calculados dos registros; carimbos de
-  tempo coerentes; aviso "Dados simulados" e coluna ORIGEM=SIMULADO no CSV. Os ensaios NÃO são medições
-  reais de FCM/Telegram: para o TCC, substitua por medições em dispositivos reais.
-
-Acessibilidade:
-- Textos pequenos maiores e mais escuros na tela do idoso; foco visível; respeita "reduzir movimento";
-  avisos (toast) anunciados por leitores de tela.
-
-Requer internet para carregar Tailwind, fontes e ícones (CDN).
-
-
----------------------------------------------------------------
-REORGANIZAÇÃO DA NAVEGAÇÃO (v3.1)
----------------------------------------------------------------
-- Abas renomeadas: Idoso | Família | Laboratório (TCC).
-- Tela do idoso: o cartão do remédio e o botão "Já tomei" agora vêm primeiro; progresso e conquistas ficam abaixo.
-- Seletor de horários ("Seus remédios de hoje") saiu da barra de testes e foi para a tela do idoso, com botões grandes.
-- Simulador da banca recolhido em "Ferramentas de demonstração".
-- Painel da família: cadastro de medicamento recolhido; títulos em linguagem simples.
-- Jargão técnico (Flesch, toque duplo) removido da tela do idoso; segue disponível no cadastro da família.
-- app.js não foi alterado.
+O alarme roda com a página aberta e visível na aba Idoso. Os dados e a
+permissão de consulta ficam no navegador. A aba Família simula acesso
+somente para leitura, sem autenticação nem envio remoto. A confirmação
+registra uma interação. O protótipo usa dados fictícios, não calcula doses,
+não recomenda compensação e não orienta a tomada de uma dose atrasada.
+Os limiares são parâmetros de demonstração. Avaliação formal de
+acessibilidade, legibilidade e revisão clínica são etapas próprias do PTCC.

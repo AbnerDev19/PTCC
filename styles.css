@@ -284,3 +284,66 @@ details.demo-tools > summary { font-size: 13px; color: var(--med-muted); min-hei
 #medSwitcher button { font-size: 17px !important; font-weight: 700 !important; padding: 12px 20px !important; min-height: 52px; border-radius: 16px !important; }
 #medSwitcher button[aria-pressed="false"] { background: #fff !important; border: 2px solid #c7dfe6; color: var(--med-ink) !important; }
 #medSwitcher button[aria-pressed="true"] { background: var(--med-teal-dark) !important; color: #fff !important; }
+
+/* Controles do fluxo de demonstração e do histórico */
+.hidden { display: none !important; }
+.access-tools { display: flex; flex-wrap: wrap; gap: .5rem; }
+.control {
+  min-height: 48px;
+  padding: .55rem .85rem;
+  background: var(--surface-card);
+  border: 1px solid #a3a6ad;
+  border-radius: .75rem;
+  font-weight: 650;
+}
+.control[aria-pressed="true"], .control.primary { background: #0055ab; color: white; }
+.control:disabled, #btnConfirmDose:disabled { opacity: .7; cursor: default; }
+.med-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; }
+.med-form label { display: grid; align-content: start; gap: .25rem; font-weight: 650; }
+.med-form input, .med-form textarea, .med-form select {
+  width: 100%;
+  min-height: 48px;
+  padding: .5rem;
+  border: 1px solid #a3a6ad;
+  border-radius: .5rem;
+  background: var(--surface-card);
+}
+.med-photo { max-width: min(100%, 14rem); max-height: 12rem; object-fit: contain; border-radius: .75rem; }
+.history-day { border-bottom: 1px solid #d4d4d8; padding: .6rem 0; }
+.history-day summary, #view-elderly summary, #view-lab summary { cursor: pointer; }
+.history-day li { padding: .3rem 0; }
+.scenario-metrics { display: flex; flex-wrap: wrap; gap: .65rem; margin: .75rem 0; }
+.scenario-metrics li { background: #e9f2fc; border-radius: .6rem; padding: .65rem; }
+#reminder {
+  margin: 0; width: 100%; height: 100%; max-width: none; max-height: none;
+  background: var(--bg-canvas); color: var(--text-ink); padding: clamp(1rem, 5vw, 3rem);
+}
+.reminder-content { max-width: 45rem; margin: 2rem auto; font-size: 1.2rem; overflow-wrap: anywhere; }
+.reminder-content h2 { font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 800; }
+.reminder-content p, .reminder-content h3, .reminder-content img { margin-block: .7rem; }
+.large-text { font-size: 125%; }
+.high-contrast { color-scheme: dark; }
+.high-contrast body, .high-contrast body *:not(i) {
+  background-color: #111 !important;
+  background-image: none !important;
+  color: #fff !important;
+  border-color: #fff !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+.high-contrast button[aria-pressed="true"], .high-contrast button[aria-current="page"],
+.high-contrast .primary, .high-contrast #btnConfirmDose, .high-contrast #gameProgressFill {
+  background-color: #ffed75 !important;
+  color: #111 !important;
+}
+.high-contrast :focus-visible { outline: 3px solid #7addff !important; outline-offset: 3px; }
+@media (max-width: 600px) {
+  .med-form { grid-template-columns: minmax(0, 1fr); }
+  .segmented-control { flex-wrap: wrap; }
+}
+
+.med-form label, .med-form input, .med-form textarea, .med-form select {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
